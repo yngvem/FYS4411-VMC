@@ -1,4 +1,5 @@
 #include <vector>
+#include <cmath>
 #include "particles.hpp"
 
 using namespace std;
@@ -32,4 +33,16 @@ vector<double> Particles::initial_R() {
 vector<double> Particles::initial_r() {
     vector<double> r(num_dimensions, 0);
     return r;
+}
+
+double Particles::compute_norm(vector<double> &v) {
+    double v_sq = 0;
+    for(auto* r : v)
+        v_sq += v*v;
+
+    return sqrt(v_sq);
+}
+
+vector<double> Particles::compute_distance_vector(int first_particle, int second_particle) {
+
 }
