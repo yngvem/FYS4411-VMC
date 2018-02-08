@@ -11,13 +11,13 @@ class Particles {
     int num_dimensions;
     vector<double> R;
 
-    vector<double> initial_R(int num_dimensions_, int num_particles_);
-    vector<double> initial_r(int num_dimensions_);
+    vector<double> initial_R();
+    vector<double> initial_r();
 
 public:
     vector<double> get_particle (int particle_number);
     Particles (int num_particles_, int num_dimensions_);
-    Particles (int num_particles_, int num_dimensions_, vector<double> R_);
+    Particles (int num_particles_, int num_dimensions_, vector<double>& R_);
 };
 
 
