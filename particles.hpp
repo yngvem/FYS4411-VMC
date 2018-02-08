@@ -28,8 +28,8 @@ public:
     Particles (int num_particles_, int num_dimensions_);
     Particles (int num_particles_, int num_dimensions_, vector<double>& R_);
 
-    const vector<double>& get_particle (int particle_number) const;
-    vector<double> compute_distance_vector (int first_particle_idx,
+    vector<double>& get_particle (int particle_number);
+    vector<double>& compute_distance_vector (int first_particle_idx,
                                             int second_particle_idx);
     double compute_distance  (int first_particle_idx , int second_particle_idx);
 };

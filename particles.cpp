@@ -47,19 +47,20 @@ double Particles::norm(vector<double> &v) {
     return sqrt(inner_product(v, v));
 }
 
-vector<double> Particles::difference(vector<double> &v_1, vector<double> &v_2) {
+vector<double>& Particles::difference(vector<double> &v_1, vector<double> &v_2) {
     assert_same_size(v_1, v_2);
     vector<double> difference_vector(v_1.size());
     for (int i = 0; i < v_1.size(); ++i)
-        difference_vector[i] = v_1-v_2;
+        difference_vector[i] = v_1[i] - v_2[i];
 
     return difference_vector;
 }
 
-vector<double> Particles::multiply_by_scalar(vector<double>& v, double a) {
+vector<double>& Particles::multiply_by_scalar(vector<double>& v, double a) {
     vector<double> result(v.size());
     for(int i = 0; i < v.size() ; ++i)
         result[i] = a*v[i];
+
     return result;
 }
 
@@ -72,7 +73,7 @@ double Particles::inner_product (vector<double>& v_1, vector<double>& v_2) {
     return product;
 }
 
-vector<double> Particles::get_particle(int particle_number) {
+vector<double>& Particles::get_particle(int particle_number) {
     int start_idx = particle_number*num_dimensions;
     vector<double> single_particle(num_dimensions);
     for(int i = 0; i < num_dimensions; ++i)
@@ -81,14 +82,14 @@ vector<double> Particles::get_particle(int particle_number) {
     return single_particle;
 }
 
-vector<double> Particles::compute_distance_vector (int first_particle_idx,
-                                                   int second_particle_idx) {
+vector<double>& Particles::compute_distance_vector (int first_particle_idx,
+                                                    int second_particle_idx) {
     vector<double> first_particle = get_particle(first_particle_idx);
     vector<double> second_particle = get_particle(second_particle_idx);
     return difference(first_particle, second_particle);
 }
 
-double compute_distance(int first_particle_idx , int second_particle_idx) {
+double Particles::compute_distance(int first_particle_idx , int second_particle_idx) {
     return norm(compute_distance_vector(first_particle_idx, second_particle_idx));
 }
 
