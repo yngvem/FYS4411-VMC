@@ -5,19 +5,44 @@
 
 using namespace std;
 
-Particles::Particles (int num_particles_, int num_dimensions_) :
+Particles::Particles (int num_particles_, int num_dimensions_, double mass_) :
     num_particles(num_particles_),
     num_dimensions(num_dimensions_)
+{
+    R = initial_R();
+    mass = initial_m(mass_);
+}
+
+Particles::Particles (int num_particles_, int num_dimensions_, double mass_,
+                      vector<double>& R_) :
+    num_particles(num_particles_),
+    num_dimensions(num_dimensions_),
+    R(R_)
+{
+    mass = initial_m(mass_);
+}
+
+Particles::Particles (int num_particles_, int num_dimensions_, 
+                      vector<double> mass_) :
+    num_particles(num_particles_),
+    num_dimensions(num_dimensions_),
+    mass(mass_)
 {
     R = initial_R();
 }
 
 Particles::Particles (int num_particles_, int num_dimensions_, 
-                      vector<double>& R_) :
+                      vector<double> mass_, vector<double>& R_) :
     num_particles(num_particles_),
     num_dimensions(num_dimensions_),
+    mass(mass_),
     R(R_)
 {}
+
+vector<double> Particles::initial_m(double mass_) {
+    vector<double> m(num_particles, mass_);
+    return m;
+}
 
 vector<double> Particles::initial_R() {
     int position_length = num_particles*num_dimensions;
@@ -47,7 +72,7 @@ double Particles::norm(vector<double> &v) {
     return sqrt(inner_product(v, v));
 }
 
-vector<double>& Particles::difference(vector<double> &v_1, vector<double> &v_2) {
+vector<double> Particles::difference(vector<double> &v_1, vector<double> &v_2) {
     assert_same_size(v_1, v_2);
     vector<double> difference_vector(v_1.size());
     for (int i = 0; i < v_1.size(); ++i)
@@ -56,7 +81,7 @@ vector<double>& Particles::difference(vector<double> &v_1, vector<double> &v_2) 
     return difference_vector;
 }
 
-vector<double>& Particles::multiply_by_scalar(vector<double>& v, double a) {
+vector<double> Particles::multiply_by_scalar(vector<double>& v, double a) {
     vector<double> result(v.size());
     for(int i = 0; i < v.size() ; ++i)
         result[i] = a*v[i];
@@ -73,7 +98,7 @@ double Particles::inner_product (vector<double>& v_1, vector<double>& v_2) {
     return product;
 }
 
-vector<double>& Particles::get_particle(int particle_number) {
+vector<double> Particles::get_particle(int particle_number) {
     int start_idx = particle_number*num_dimensions;
     vector<double> single_particle(num_dimensions);
     for(int i = 0; i < num_dimensions; ++i)
@@ -82,7 +107,7 @@ vector<double>& Particles::get_particle(int particle_number) {
     return single_particle;
 }
 
-vector<double>& Particles::compute_distance_vector (int first_particle_idx,
+vector<double> Particles::compute_distance_vector (int first_particle_idx,
                                                     int second_particle_idx) {
     vector<double> first_particle = get_particle(first_particle_idx);
     vector<double> second_particle = get_particle(second_particle_idx);
@@ -90,6 +115,10 @@ vector<double>& Particles::compute_distance_vector (int first_particle_idx,
 }
 
 double Particles::compute_distance(int first_particle_idx , int second_particle_idx) {
-    return norm(compute_distance_vector(first_particle_idx, second_particle_idx));
+    vector<double> distance = compute_distance_vector(first_particle_idx, second_particle_idx);
+    return norm(distance);
 }
 
+double Particles::compute_R_squared () {
+    return pow(norm(R), 2);
+}
