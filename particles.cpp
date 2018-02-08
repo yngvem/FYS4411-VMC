@@ -1,5 +1,6 @@
 #include <vector>
 #include <cmath>
+#include <stdexcept>
 #include "particles.hpp"
 
 using namespace std;
@@ -35,14 +36,27 @@ vector<double> Particles::initial_r() {
     return r;
 }
 
-double Particles::compute_norm(vector<double> &v) {
-    double v_sq = 0;
-    for(auto* r : v)
-        v_sq += v*v;
-
-    return sqrt(v_sq);
+double Particles::norm(vector<double> &v) {
+    return sqrt(inner_product(v, v));
 }
 
-vector<double> Particles::compute_distance_vector(int first_particle, int second_particle) {
-
+void assert_same_size (vector<double>& v_1, vector<double>& v_2) {
+    if (v_1.size() != v_2.size())
+        throw invalid_argument(
+            "Can't take inner product of vectors of different size"
+        );
 }
+
+double inner_product (vector<double>& v_1, vector<double>& v_2) {
+    assert_same_size(v_1, v_2);
+    double product = 0;
+    for (int i = 0; i < v_1.size(); ++i)
+        product += v_1[i]*v_2[i];
+}
+
+vector<double> Particles::compute_distance_vector (int first_particle_idx,
+                                                   int second_particle_idx) {
+    vector<double> first_particle = get_particle(first_particle_idx);
+    vector<double> second_particle = get_particle(second_particle_idx);
+}
+
