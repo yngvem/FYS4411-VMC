@@ -19,7 +19,7 @@ public:
     // Obtaining information about the position.
     const vector<double>& position() const;
     const double norm() const;
-    const double& operator[](int i);
+    const double& operator[](int i); // TODO: Should this be const and reference?
 
     // Arithmetic operations between multiple particles.
     Particle operator+(const Particle& particle);
