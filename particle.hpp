@@ -1,5 +1,5 @@
-#ifndef PARTICLES
-#define PARTICLES
+#ifndef PARTICLE
+#define PARTICLE
 
 #include <vector>
 
