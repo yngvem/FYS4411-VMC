@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include "particles.hpp"
+#include "particle.hpp"
 
 struct WaveFunctionParameters {
     double a;
@@ -14,34 +15,40 @@ struct WaveFunctionParameters {
 };
 
 class SingleParticleFunction {
-    WaveFunctionParameters* parameters;
+    const WaveFunctionParameters parameters;
 
 public:
-    double evaluate(Particles particles, int particle_idx);
-    vector<double> evaluate_gradient(Particles particles, int particle_idx);
-    double evaluate_laplace(Particles particles, int particle_idx);
+    double evaluate(Particle particle);
+    double operator()(Particle particle);
+    vector<double> evaluate_gradient(Particle particle);
+    double evaluate_laplacian(Particle particle);
 
-    SingleParticleFunction ();
+    SingleParticleFunction (WaveFunctionParameters params);
 };
 
 class WaveFunction {
-    WaveFunctionParameters* parameters;
+    const WaveFunctionParameters parameters;
+    SingleParticleFunction single_particle_function;
 
-    double diff_function_u(Particles particles, int particle_idx_1,
+    double evaluate_u(Particles particles, int particle_idx_1,
                            int particle_idx_2);
-    double first_deriv_u(Particles particles, int particle_idx_1,
+    double deriv_u(Particles particles, int particle_idx_1,
                            int particle_idx_2);
     double second_deriv_u(Particles particles, int particle_idx_1,
                            int particle_idx_2);
-
+    double onebody_part(Particles particles);
+    double log_correlation_part(Particles particles);
 public:
 
     double local_energy(Particles particles);
-    double evaluate(Particles particles);
+    double evaluate_wavefunction(Particles particles);
+    double quantum_force(Particles particles);
+    double second_deriv_wavefunction(Particles particles);
+
     double evaluate_PDF(Particles particle);
 
 
-    WaveFunction ();
+    WaveFunction (WaveFunctionParameters params);
 };
 
 

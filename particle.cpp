@@ -42,8 +42,12 @@ const vector<double>& Particle::get_position () const {
     return r;
 }
 
-const double Particle::distance_from_origin () {
+double Particle::distance_from_origin () {
     return norm(r);
+}
+
+double Particle::weighted_distance_from_origin (vector<double> weights) {
+    return weighted_norm(r, weights);
 }
 
 const vector<double> Particle::distance_vector (const Particle& particle) {

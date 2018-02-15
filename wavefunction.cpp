@@ -1,103 +1,129 @@
 #include <cmath>
 #include "wavefunction.hpp"
+#include "particle.hpp"
 
-using namespace atd;
+using namespace std;
 
-SingleParticleFunction::SingleParticleFunction() :
+SingleParticleFunction::SingleParticleFunction (WaveFunctionParameters params) :
+    parameters(params)
 {}
 
-double SingleParticleFunction::evaluate(Particles particles, int particle_idx) {
+double SingleParticleFunction::operator() (Particle particle) {
+    return evaluate(particle);
+}
 
-    vector<double> single_particle = particles.get_particle(particle_idx);
+double SingleParticleFunction::evaluate (Particle particle) {
+
     double elliptic_norm = 0;
-
-    for (int i = 0; i < single_particle.size(); ++i) {
-        if (i &= 2)
-            elliptic_norm += pow(single_particle[i], 2);
+    for (int i = 0; i< particle.num_dimensions; ++i) {
+        if (i == 2)
+            elliptic_norm += parameters.beta*pow(particle[i], 2);
         else
-            elliptic_norm += WaveFunctionParameters.beta*pow(single_particle[i], 2);
+            elliptic_norm += pow(particle[i], 2);
     }
 
-    return exp(-alpha*elliptic_norm);
+    return exp(-parameters.alpha*elliptic_norm);
 
 }
 
-vector<double> SingleParticleFunction::evaluate_gradient(Particles particles,
-                                                 int particle_idx) {
+vector<double> SingleParticleFunction::evaluate_gradient (Particle particle) {
+    double value = evaluate(particle);
+    vector<double> gradient(particle.num_dimensions, -2*parameters.alpha*value);
 
-    SingleParticleFunction single_particle_function; // = SingleParticleFunction();
-    double value = single_particle_function.evaluate(particles, particle_idx);
-    vector<double> single_particle = particles.get_particle(particle_idx);
+    for (int i = 0; i < particle.num_dimensions; ++i) {
+        if (i == 2)
+            gradient[i] *= parameters.beta * particle[i];
+        else
+            gradient[i] *= particle[i];
+    }
 
-    if (single_particle.size() == 3)
-        single_particle[2] *= WaveFunctionParameters.beta;
-
-    return -WaveFunctionParameters.alpha*value*single_particle;
-
+    return gradient;
 }
 
-double SingleParticleFunction::evaluate_laplace(Particles particles,
-                                                int particle_idx) {
-
-    SingleParticleFunction single_particle_function; // = SingleParticleFunction();
-    double value = single_particle_function.evaluate(particles, particle_idx);
-    vector<double> single_particle = particles.get_particle(particle_idx);
+double SingleParticleFunction::evaluate_laplacian (Particle particle) {
+    double value = evaluate(particle);
     double elliptic_norm = 0;
     double derivative_factor = 0;
 
-    for (int i = 0; i < single_particle.size(); ++i) {
-        if (i &= 2)
-            elliptic_norm += pow(single_particle[i], 2);
+    for (int i = 0; i < particle.num_dimensions; ++i) {
+        if (i != 2)
+            elliptic_norm += pow(particle[i], 2);
         else
-            elliptic_norm += pow(WaveFunctionParameters.beta*single_particle[i], 2);
+            elliptic_norm += pow(parameters.beta*particle[i], 2);
     }
 
-    derivative_factor = -2*WaveFunctionParameters.alpha*(2+WaveFunctionParameters.beta)
-            - 4*pow(WaveFunctionParameters.alpha, 2)*elliptic_norm;
+    derivative_factor = -2*parameters.alpha*(2+parameters.beta)
+                        -4*pow(parameters.alpha, 2)*elliptic_norm;
 
     return derivative_factor*value;
 }
 
-WaveFunction::WaveFunction() :
-{}
+WaveFunction::WaveFunction (WaveFunctionParameters params) :
+    parameters(params)
+{
+    SingleParticleFunction single_particle_function(params);
+}
 
-double WaveFunction::diff_function_u(Particles particles, int particle_idx_1,
+double WaveFunction::evaluate_u (Particles particles, int particle_idx_1,
                                      int particle_idx_2) {
     double particle_distance = particles.compute_distance(particle_idx_1,
                                                           particle_idx_2);
 
-    return log(1-WaveFunctionParameters.a/particle_distance);
+    return log(1-parameters.a/particle_distance);
 
 }
 
-double WaveFunction::first_deriv_u(Particles particles, int particle_idx_1,
+double WaveFunction::deriv_u (Particles particles, int particle_idx_1,
                                    int particle_idx_2) {
     double particle_distance = particles.compute_distance(particle_idx_1,
                                                           particle_idx_2);
-    double denominator = (particle_distance-WaveFunctionParameters.a)*particle_distance;
+    double denominator = (particle_distance-parameters.a)*particle_distance;
 
-    return WaveFunctionParameters.a/denominator;
+    return parameters.a/denominator;
 
 }
 
-double WaveFunction::second_deriv_u(Particles particles, int particle_idx_1,
+double WaveFunction::second_deriv_u (Particles particles, int particle_idx_1,
                                     int particle_idx_2) {
     double particle_distance = particles.compute_distance(particle_idx_1,
                                                           particle_idx_2);
-    double denominator = (particle_distance-WaveFunctionParameters.a)*particle_distance;
+    double denominator = (particle_distance-parameters.a)*particle_distance;
     denominator = pow(denominator, 2);
 
-    return -WaveFunctionParameters.a*(2*particle_distance-WaveFunctionParameters.a)/denominator;
+    return -parameters.a*(2*particle_distance-parameters.a)/denominator;
 }
 
-double WaveFunction::local_energy(Particles particles) {
+double WaveFunction::onebody_part (Particles particles) {
+    double g = 1;
+    for (int i = 0; i < particles.num_particles; ++i) 
+        g *= single_particle_function(particles.get_particle(i));
+    
+    return g;
+}
+
+double WaveFunction::local_energy (Particles particles) {
 
 }
 
-double WaveFunction::evaluate(Particles particles) {
+double WaveFunction::log_correlation_part (Particles particles) {
+    double u = 0;
+    for (int i = 0; i < particles.num_particles-1; ++i)
+        for (int j = i+1; j < particles.num_particles; ++j)
+            u += evaluate_u(particles, i, j);
+}
+
+double WaveFunction::evaluate_wavefunction (Particles particles) {
+    return onebody_part(particles) * exp(log_correlation_part(particles));
+}
+
+double WaveFunction::quantum_force (Particles particles) {
+    
+}
+
+double WaveFunction::second_deriv_wavefunction (Particles particles) {
 
 }
 
-double WaveFunction::evaluate_PDF(Particles particle) {
+double WaveFunction::evaluate_PDF (Particles particle) {
 
 }

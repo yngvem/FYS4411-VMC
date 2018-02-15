@@ -11,9 +11,6 @@ using namespace std;
 // TODO: Create single particle class
 
 class Particles {
-    int num_particles;
-    int num_dimensions;
-    vector<double> mass;
     vector<double> R;
 
     // Initialisation funcitons
@@ -28,6 +25,10 @@ class Particles {
     double inner_product(vector<double>& v_1, vector<double>& v_2);
 
 public:
+    const int num_particles;
+    const int num_dimensions;
+    const vector<double> mass;
+
     Particles (int num_particles_, int num_dimensions_, vector<double> mass_);
     Particles (int num_particles_, int num_dimensions_, vector<double> mass_,
                vector<double>& R_);
