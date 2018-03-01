@@ -18,10 +18,10 @@ class SingleParticleFunction {
     const WaveFunctionParameters parameters;
 
 public:
-    double evaluate(Particle particle);
-    double operator()(Particle particle);
-    vector<double> evaluate_gradient(Particle particle);
-    double evaluate_laplacian(Particle particle);
+    double evaluate(const Particle& particle);
+    double operator()(const Particle& particle);
+    vector<double> evaluate_gradient(const Particle& particle);
+    double evaluate_laplacian(const Particle& particle);
 
     SingleParticleFunction (WaveFunctionParameters params);
 };
@@ -30,22 +30,22 @@ class WaveFunction {
     const WaveFunctionParameters parameters;
     SingleParticleFunction single_particle_function;
 
-    double evaluate_u(Particles particles, int particle_idx_1,
+    double evaluate_u (const Particles& particles, int particle_idx_1,
                            int particle_idx_2);
-    double deriv_u(Particles particles, int particle_idx_1,
+    double deriv_u (const Particles& particles, int particle_idx_1,
                            int particle_idx_2);
-    double second_deriv_u(Particles particles, int particle_idx_1,
+    double second_deriv_u (const Particles& particles, int particle_idx_1,
                            int particle_idx_2);
-    double onebody_part(Particles particles);
-    double log_correlation_part(Particles particles);
+    double onebody_part (const Particles& particles);
+    double log_correlation_part (const Particles& particles);
 public:
 
-    double local_energy(Particles particles);
-    double evaluate_wavefunction(Particles particles);
-    double quantum_force(Particles particles);
-    double second_deriv_wavefunction(Particles particles);
+    double local_energy (const Particles& particles);
+    double evaluate_wavefunction (const Particles& particles);
+    vector<double> quantum_force (const Particles& particles);
+    double second_deriv_wavefunction_quotient (const Particles& particles);
 
-    double evaluate_PDF(Particles particle);
+    double evaluate_PDF (const Particles& particle);
 
 
     WaveFunction (WaveFunctionParameters params);
