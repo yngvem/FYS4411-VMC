@@ -15,7 +15,7 @@ struct WaveFunctionParameters {
 };
 
 class SingleParticleFunction {
-    const WaveFunctionParameters parameters;
+    WaveFunctionParameters parameters;
 
 public:
     double evaluate(const Particle& particle);
@@ -24,10 +24,12 @@ public:
     double evaluate_laplacian(const Particle& particle);
 
     SingleParticleFunction (WaveFunctionParameters params);
+    SingleParticleFunction ();
+    void set_parameters (WaveFunctionParameters params);
 };
 
 class WaveFunction {
-    const WaveFunctionParameters parameters;
+    WaveFunctionParameters parameters;
     SingleParticleFunction single_particle_function;
 
     double evaluate_u (const Particles& particles, int particle_idx_1,
@@ -44,6 +46,9 @@ public:
     double evaluate_wavefunction (const Particles& particles);
     vector<double> quantum_force (const Particles& particles);
     double second_deriv_wavefunction_quotient (const Particles& particles);
+    double ext_potential (const Particles& particles, int particle_idx);
+    double int_potential (const Particles& particles, int particle_idx1,
+                          int particle_idx2);
 
     double evaluate_PDF (const Particles& particle);
 

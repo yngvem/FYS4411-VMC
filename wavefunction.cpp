@@ -1,6 +1,7 @@
 #include <cmath>
 #include "wavefunction.hpp"
 #include "particle.hpp"
+#include "particles.hpp"
 
 using namespace std;
 
@@ -9,9 +10,19 @@ SingleParticleFunction::SingleParticleFunction (WaveFunctionParameters params) :
     parameters(params)
 {}
 
+
+SingleParticleFunction::SingleParticleFunction () {};
+
+
+void SingleParticleFunction::set_parameters (WaveFunctionParameters params) {
+    parameters = params;
+}
+
+
 double SingleParticleFunction::operator() (const Particle& particle) {
     return evaluate(particle);
 }
+
 
 double SingleParticleFunction::evaluate (const Particle& particle) {
 
@@ -27,6 +38,7 @@ double SingleParticleFunction::evaluate (const Particle& particle) {
 
 }
 
+
 vector<double> SingleParticleFunction::evaluate_gradient (const Particle& particle) {
     double value = evaluate(particle);
     vector<double> gradient(particle.num_dimensions, -2*parameters.alpha*value);
@@ -40,6 +52,7 @@ vector<double> SingleParticleFunction::evaluate_gradient (const Particle& partic
 
     return gradient;
 }
+
 
 double SingleParticleFunction::evaluate_laplacian (const Particle& particle) {
     double value = evaluate(particle);
@@ -59,12 +72,14 @@ double SingleParticleFunction::evaluate_laplacian (const Particle& particle) {
     return derivative_factor*value;
 }
 
+
 //----------------Wavefunction-------------------//
 WaveFunction::WaveFunction (WaveFunctionParameters params) :
     parameters(params)
 {
-    SingleParticleFunction single_particle_function(params);
+    single_particle_function.set_parameters(params);
 }
+
 
 double WaveFunction::evaluate_u (const Particles& particles, int particle_idx_1,
                                      int particle_idx_2) {
@@ -74,6 +89,7 @@ double WaveFunction::evaluate_u (const Particles& particles, int particle_idx_1,
     return log(1-parameters.a/particle_distance);
 
 }
+
 
 double WaveFunction::deriv_u (const Particles& particles, int particle_idx_1,
                                    int particle_idx_2) {
@@ -85,6 +101,7 @@ double WaveFunction::deriv_u (const Particles& particles, int particle_idx_1,
 
 }
 
+
 double WaveFunction::second_deriv_u (const Particles& particles, int particle_idx_1,
                                     int particle_idx_2) {
     double particle_distance = particles.compute_distance(particle_idx_1,
@@ -95,6 +112,7 @@ double WaveFunction::second_deriv_u (const Particles& particles, int particle_id
     return -parameters.a*(2*particle_distance-parameters.a)/denominator;
 }
 
+
 double WaveFunction::onebody_part (const Particles& particles) {
     double g = 1;
     for (int i = 0; i < particles.num_particles; ++i) 
@@ -103,9 +121,11 @@ double WaveFunction::onebody_part (const Particles& particles) {
     return g;
 }
 
+
 double WaveFunction::local_energy (const Particles& particles) {
 
 }
+
 
 double WaveFunction::log_correlation_part (const Particles& particles) {
     double u = 0;
@@ -114,9 +134,11 @@ double WaveFunction::log_correlation_part (const Particles& particles) {
             u += evaluate_u(particles, i, j);
 }
 
+
 double WaveFunction::evaluate_wavefunction (const Particles& particles) {
     return onebody_part(particles) * exp(log_correlation_part(particles));
 }
+
 
 // Quantum force = drift force
 // TODO: Test quantum force
@@ -150,6 +172,7 @@ vector<double> WaveFunction::quantum_force (const Particles& particles) {
 
     return force;
 }
+
 
 double WaveFunction::second_deriv_wavefunction_quotient (const Particles& particles) {
     double wave_function_quotient;
@@ -210,6 +233,16 @@ double WaveFunction::second_deriv_wavefunction_quotient (const Particles& partic
     return wave_function_quotient;
 }
 
-double WaveFunction::evaluate_PDF (const Particles& particle) {
 
+double WaveFunction::evaluate_PDF (const Particles& particles) {
+    return pow(evaluate_wavefunction(particles), 2);
+}
+
+
+double WaveFunction::ext_potential(const Particles& particles, int particle_idx){
+    Particle particle = particles.get_particle(particle_idx); 
+
+    vector<double> weights = {parameters.omega_ho, parameters.omega_ho, parameters.omega_z};
+
+    return 0.5*particle.m*pow(particle.weighted_distance_from_origin(weights), 2);
 }

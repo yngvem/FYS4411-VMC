@@ -24,7 +24,7 @@ vector<double> Particle::initiate_r () {
 }
 
 double Particle::weighted_norm (const vector<double>& vec,
-                                const vector<double>& weights) {
+                                const vector<double>& weights) const {
     // TODO: Assert equal size
     double sum = 0;
     for (int i = 0; i < vec.size(); ++i) {
@@ -33,7 +33,7 @@ double Particle::weighted_norm (const vector<double>& vec,
     return sqrt(sum);
 }
 
-double Particle::norm (const vector<double>& vec) {
+double Particle::norm (const vector<double>& vec) const {
     vector<double> weights(vec.size(), 1);  // TODO: Precompute and store as private.
     return weighted_norm(vec, weights);
 }
@@ -42,15 +42,15 @@ const vector<double>& Particle::get_position () const {
     return r;
 }
 
-double Particle::distance_from_origin () {
+double Particle::distance_from_origin () const {
     return norm(r);
 }
 
-double Particle::weighted_distance_from_origin (vector<double> weights) {
+double Particle::weighted_distance_from_origin (vector<double> weights) const {
     return weighted_norm(r, weights);
 }
 
-const vector<double> Particle::distance_vector (const Particle& particle) {
+vector<double> Particle::distance_vector (const Particle& particle) const {
     // TODO: Assert equal size
     vector<double> distance_vector_(0, num_dimensions);
     for (int i = 0; i < num_dimensions; ++i) {
@@ -60,10 +60,10 @@ const vector<double> Particle::distance_vector (const Particle& particle) {
     return distance_vector_;
 }
 
-const double Particle::distance_between (const Particle& particle) {
+double Particle::distance_between (const Particle& particle) const {
     return norm(distance_vector(particle));
 }
 
-double Particle::operator[] (int i) {
+double Particle::operator[] (int i) const {
     return r[i];
 }
