@@ -1,4 +1,5 @@
 #include <cmath>
+#include <limits>
 #include "wavefunction.hpp"
 #include "particle.hpp"
 #include "particles.hpp"
@@ -127,6 +128,34 @@ double WaveFunction::local_energy (const Particles& particles) {
 }
 
 
+double WaveFunction::ext_potential(const Particles& particles){
+
+    vector<double> weights = {parameters.omega_ho, parameters.omega_ho, parameters.omega_z};
+    double external_potential = 0;
+
+    for (int k = 0; k < particles.num_particles; ++k){
+        Particle particle = particles.get_particle(particle_idx);
+
+        external_potential += 0.5*particle.m*pow(particle.weighted_distance_from_origin(weights), 2);
+    }
+
+    return external_potential;
+}
+
+double WaveFunction::int_potential (const Particles& particles) {
+    double a = parameters.a;
+
+    for(int k = 0; k < particles.num_particles; ++k){
+        for (int i = 0; i < k; ++i){
+         if (particles.compute_distance(particle_idx1, particle_idx2) <= a)
+            return numeric_limits<double>::infinity();
+        }
+    }
+
+    return 0;
+}
+
+
 double WaveFunction::log_correlation_part (const Particles& particles) {
     double u = 0;
     for (int i = 0; i < particles.num_particles-1; ++i)
@@ -228,7 +257,7 @@ double WaveFunction::second_deriv_wavefunction_quotient (const Particles& partic
             wave_function_quotient += second_deriv_u(particles, j, k);
             wave_function_quotient += 2*deriv_u(particles, j, k)/particles.compute_distance(j, k);
         }
-    }   
+    }
 
     return wave_function_quotient;
 }
@@ -238,11 +267,3 @@ double WaveFunction::evaluate_PDF (const Particles& particles) {
     return pow(evaluate_wavefunction(particles), 2);
 }
 
-
-double WaveFunction::ext_potential(const Particles& particles, int particle_idx){
-    Particle particle = particles.get_particle(particle_idx); 
-
-    vector<double> weights = {parameters.omega_ho, parameters.omega_ho, parameters.omega_z};
-
-    return 0.5*particle.m*pow(particle.weighted_distance_from_origin(weights), 2);
-}

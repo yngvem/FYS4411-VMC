@@ -2,6 +2,7 @@
 #define WAVEFUNCTION_HPP
 
 #include <cmath>
+#include <limits>
 #include "particles.hpp"
 #include "particle.hpp"
 
@@ -46,9 +47,8 @@ public:
     double evaluate_wavefunction (const Particles& particles);
     vector<double> quantum_force (const Particles& particles);
     double second_deriv_wavefunction_quotient (const Particles& particles);
-    double ext_potential (const Particles& particles, int particle_idx);
-    double int_potential (const Particles& particles, int particle_idx1,
-                          int particle_idx2);
+    double ext_potential (const Particles& particles);
+    double int_potential (const Particles& particles);
 
     double evaluate_PDF (const Particles& particle);
 
