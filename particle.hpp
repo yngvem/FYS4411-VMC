@@ -9,7 +9,7 @@ class Particle {
     vector<double> r;
     
 
-    vector<double> initiate_r();
+    void initiate_r();
 
     // Linear algebra functions.
     double norm(const vector<double>& vec) const;
@@ -21,7 +21,7 @@ public:
     const double m;
 
     Particle(int num_dimensions_, double mass);
-    Particle(double mass, vector<double> r);
+    Particle(vector<double> r, double mass);
 
     // Obtaining information about the position.
     const vector<double>& get_position() const;

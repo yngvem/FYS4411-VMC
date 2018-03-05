@@ -12,7 +12,10 @@ struct WaveFunctionParameters {
     double beta;
     double omega_ho;
     double omega_z;
-    double hbar; 
+    double hbar;
+
+    WaveFunctionParameters();
+    void set_default_parameters();
 };
 
 class SingleParticleFunction {
@@ -54,6 +57,10 @@ public:
 
 
     WaveFunction (WaveFunctionParameters params);
+    WaveFunction ();
+
+    void set_parameters (WaveFunctionParameters params);
+    void set_default_parameters ();
 };
 
 

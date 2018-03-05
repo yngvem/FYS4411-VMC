@@ -6,6 +6,24 @@
 
 using namespace std;
 
+//----------------Parameters------------------//
+WaveFunctionParameters::WaveFunctionParameters () :
+    a(0),
+    alpha(1),
+    beta(1),
+    omega_ho(1),
+    omega_z(1),
+    hbar(1)
+{}
+void WaveFunctionParameters::set_default_parameters () {
+    a = 0;
+    alpha = 1;
+    beta = 1;
+    omega_ho = 1;
+    omega_z = 1;
+    hbar = 1;
+}
+
 //----------------Single particle function-------------------//
 SingleParticleFunction::SingleParticleFunction (WaveFunctionParameters params) :
     parameters(params)
@@ -81,6 +99,8 @@ WaveFunction::WaveFunction (WaveFunctionParameters params) :
     single_particle_function.set_parameters(params);
 }
 
+WaveFunction::WaveFunction () {}
+
 
 double WaveFunction::evaluate_u (const Particles& particles, int particle_idx_1,
                                      int particle_idx_2) {
@@ -125,6 +145,9 @@ double WaveFunction::onebody_part (const Particles& particles) {
 
 double WaveFunction::local_energy (const Particles& particles) {
 
+    return second_deriv_wavefunction_quotient(particles) + ext_potential(particles)
+          +int_potential(particles);
+
 }
 
 
@@ -134,7 +157,7 @@ double WaveFunction::ext_potential(const Particles& particles){
     double external_potential = 0;
 
     for (int k = 0; k < particles.num_particles; ++k){
-        Particle particle = particles.get_particle(particle_idx);
+        Particle particle = particles.get_particle(k);
 
         external_potential += 0.5*particle.m*pow(particle.weighted_distance_from_origin(weights), 2);
     }
@@ -147,7 +170,7 @@ double WaveFunction::int_potential (const Particles& particles) {
 
     for(int k = 0; k < particles.num_particles; ++k){
         for (int i = 0; i < k; ++i){
-         if (particles.compute_distance(particle_idx1, particle_idx2) <= a)
+         if (particles.compute_distance(k, i) <= a)
             return numeric_limits<double>::infinity();
         }
     }
@@ -254,9 +277,11 @@ double WaveFunction::second_deriv_wavefunction_quotient (const Particles& partic
 
         // Final Summation
         for (int j = 0; j < particles.num_particles; ++j){
+            if (j == k) continue;
             wave_function_quotient += second_deriv_u(particles, j, k);
             wave_function_quotient += 2*deriv_u(particles, j, k)/particles.compute_distance(j, k);
         }
+
     }
 
     return wave_function_quotient;

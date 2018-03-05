@@ -1,5 +1,6 @@
 #include <vector>
 #include <cmath>
+#include <iostream>
 #include "particle.hpp"
 
 using namespace std;
@@ -9,18 +10,18 @@ Particle::Particle (int num_dimensions_, double mass) :
     num_dimensions(num_dimensions_),
     m(mass)
 {
-    r = initiate_r();
+    initiate_r();
 }
 
-Particle::Particle (double mass, const vector<double> r_) :
+Particle::Particle (const vector<double> r_, double mass) :
     num_dimensions(r_.size()),
     m(mass),
     r(r_)
 {}
 
-vector<double> Particle::initiate_r () {
-    vector <double> r_(num_dimensions, 0);
-    return r_;
+void Particle::initiate_r () {
+    for (int i = 0; i < num_dimensions; ++i)
+        r.push_back(0);
 }
 
 double Particle::weighted_norm (const vector<double>& vec,
@@ -52,7 +53,7 @@ double Particle::weighted_distance_from_origin (vector<double> weights) const {
 
 vector<double> Particle::distance_vector (const Particle& particle) const {
     // TODO: Assert equal size
-    vector<double> distance_vector_(0, num_dimensions);
+    vector<double> distance_vector_(num_dimensions, 0);
     for (int i = 0; i < num_dimensions; ++i) {
         distance_vector_[i] = r[i] - particle.get_position()[i];
     }

@@ -23,6 +23,21 @@ Particles::Particles (int num_particles_, int num_dimensions_,
         particles.push_back(Particle(num_dimensions, mass[i]));
 }
 
+Particles::Particles (vector<vector <double>> positions, double mass) :
+    num_particles(positions.size()),
+    num_dimensions(positions[0].size())
+{
+    for (int i = 0; i < num_particles; ++i)
+        particles.push_back(Particle(positions[i], mass));
+}
+
+Particles::Particles (vector<vector <double>> positions, vector<double> mass):
+    num_particles(positions.size()),
+    num_dimensions(positions[0].size())
+{
+    for (int i = 0; i < num_particles; ++i)
+        particles.push_back(Particle(positions[i], mass[i]));
+}
 
 const Particle& Particles::get_particle(int particle_idx) const {
     return particles[particle_idx];
