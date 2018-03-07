@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cmath>
 #include <limits>
 #include "wavefunction.hpp"
@@ -77,7 +78,22 @@ double SingleParticleFunction::evaluate_laplacian (const Particle& particle) {
     double value = evaluate(particle);
     double elliptic_norm = 0;
     double derivative_factor = 0;
+    double alpha = parameters.alpha;
+    double beta = parameters.alpha;
 
+    std::cout << "Alpha: " << alpha << endl
+              << "Beta: " << beta << endl;
+
+    for (int i = 0; i < particle.num_dimensions; ++i) {
+        if (i != 2)
+            elliptic_norm += -2*alpha + 4* pow(alpha, 2)*particle[i];
+        else
+            elliptic_norm += -2*beta*alpha + 4* pow(beta*alpha, 2)*particle[i];
+    }
+
+    return elliptic_norm*value;
+
+    /*
     for (int i = 0; i < particle.num_dimensions; ++i) {
         if (i != 2)
             elliptic_norm += pow(particle[i], 2);
@@ -89,6 +105,7 @@ double SingleParticleFunction::evaluate_laplacian (const Particle& particle) {
                         -4*pow(parameters.alpha, 2)*elliptic_norm;
 
     return derivative_factor*value;
+    */
 }
 
 
@@ -231,13 +248,15 @@ double WaveFunction::second_deriv_wavefunction_quotient (const Particles& partic
 
     // Differentiate wrt all particles
     for (int k = 0; k < particles.num_particles; ++k){
+        double wfq_addition = 0;
         const Particle current_particle = particles.get_particle(k);
+        double mass = current_particle.m;
         double single_particle_value = single_particle_function.evaluate(current_particle);
 
         // Single particle relative laplacian
         double relative_laplacian = single_particle_function.evaluate_laplacian(current_particle)
                                    /single_particle_value;
-        wave_function_quotient += relative_laplacian;
+        wfq_addition += relative_laplacian;
 
         // Single particle relative gradient
         vector<double> rel_gradient = single_particle_function.evaluate_gradient(current_particle);
@@ -252,7 +271,7 @@ double WaveFunction::second_deriv_wavefunction_quotient (const Particles& partic
             double u_diff = deriv_u(particles, j, k);
 
             for (int l= 0; l < particles.num_dimensions; ++l)
-                wave_function_quotient += rel_gradient[k]*normalised_distance[l]*u_diff;
+                wfq_addition += rel_gradient[k]*normalised_distance[l]*u_diff;
         }
 
         // Double summation
@@ -270,7 +289,7 @@ double WaveFunction::second_deriv_wavefunction_quotient (const Particles& partic
                     double i_term = u_diff_i*rel_distance_i[l];
                     double j_term = u_diff_j*rel_distance_j[l];
 
-                    wave_function_quotient += i_term*j_term;
+                    wfq_addition += i_term*j_term;
                 }
             }
         }
@@ -278,10 +297,11 @@ double WaveFunction::second_deriv_wavefunction_quotient (const Particles& partic
         // Final Summation
         for (int j = 0; j < particles.num_particles; ++j){
             if (j == k) continue;
-            wave_function_quotient += second_deriv_u(particles, j, k);
-            wave_function_quotient += 2*deriv_u(particles, j, k)/particles.compute_distance(j, k);
+            wfq_addition += second_deriv_u(particles, j, k);
+            wfq_addition += 2*deriv_u(particles, j, k)/particles.compute_distance(j, k);
         }
 
+        wave_function_quotient += -(0.5*parameters.hbar/mass)*wfq_addition;
     }
 
     return wave_function_quotient;
