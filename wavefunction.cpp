@@ -211,6 +211,7 @@ double WaveFunction::evaluate_wavefunction (const Particles& particles) {
 vector<double> WaveFunction::quantum_force (const Particles& particles) {
     vector<double> force(particles.num_dimensions*particles.num_particles);
 
+    double psi = evaluate_wavefunction(particles);
     // Compute quantum force per particle
     for (int i = 0; i < particles.num_particles; ++i) {
         // Unary terms
@@ -218,6 +219,7 @@ vector<double> WaveFunction::quantum_force (const Particles& particles) {
             particles.get_particle(i)
         );
         vector<double> u_gradient(particles.num_dimensions, 0);
+
         // Pairwise interactions
         for (int j = 0; j < particles.num_particles; ++j) {
             if (j == i) continue;
@@ -233,7 +235,7 @@ vector<double> WaveFunction::quantum_force (const Particles& particles) {
 
         // Update force
         for (int j = 0; j < particles.num_dimensions; ++j)
-            force[i*particles.num_dimensions+j] = single_particle_grad[j] + u_gradient[j];
+            force[i*particles.num_dimensions+j] = 2*(single_particle_grad[j] + u_gradient[j])/psi;
     }
 
     return force;
