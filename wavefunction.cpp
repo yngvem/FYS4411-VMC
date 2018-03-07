@@ -81,9 +81,6 @@ double SingleParticleFunction::evaluate_laplacian (const Particle& particle) {
     double alpha = parameters.alpha;
     double beta = parameters.beta;
 
-    std::cout << "Alpha: " << alpha << endl
-              << "Beta: " << beta << endl;
-
     for (int i = 0; i < particle.num_dimensions; ++i) {
         if (i != 2)
             elliptic_norm += -2*alpha + 4* pow(alpha, 2)*particle[i];

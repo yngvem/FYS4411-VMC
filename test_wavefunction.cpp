@@ -31,18 +31,40 @@ TEST_CASE("SINGLE PARTICLE FUNCTION") {
         SECTION("ONE DIMENSION") {
             int num_dimensions = 1;
             SECTION("PLACED AT THE ORIGIN") {
+                vector<double> position(1, 0);
+                Particle particle(position, mass);
+
                 SECTION("TESTING EVALUATION") {
-                    vector<double> position(1, 0);
-                    Particle particle(position, mass);
                     REQUIRE(single_particle_function.evaluate(particle) == Approx(1));
                 }
+
+                SECTION("TESTING GRADIENT") {
+                    vector<double> grad = single_particle_function.evaluate_gradient(particle);
+                    for (auto x : grad)
+                       REQUIRE(x == Approx(0));
+                }
+/*
+                SECTION("TESTING LAPLACIAN") {
+                    REQUIRE(single_particle_function.evaluate_laplacian(particle) == Approx(-1));
+                }*/
             }
 
             SECTION("PLACED AT x=1") {
+                vector<double> position(1, 1);
+                Particle particle(position, mass);
+
                 SECTION("TESTING EVALUATION") {
-                    vector<double> position(1, 1);
-                    Particle particle(position, mass);
                     REQUIRE(single_particle_function.evaluate(particle) == Approx(exp(-0.5)));
+                }
+
+                SECTION("TESTING GRADIENT") {
+                    vector<double> grad = single_particle_function.evaluate_gradient(particle);
+                    for (auto x : grad)
+                        REQUIRE(x == Approx(-exp(-0.5)));
+                }
+
+                SECTION("TESTING LAPLACIAN") {
+                    REQUIRE(single_particle_function.evaluate_laplacian(particle) == Approx(0));
                 }
             }
         }
