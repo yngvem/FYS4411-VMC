@@ -79,7 +79,7 @@ double SingleParticleFunction::evaluate_laplacian (const Particle& particle) {
     double elliptic_norm = 0;
     double derivative_factor = 0;
     double alpha = parameters.alpha;
-    double beta = parameters.alpha;
+    double beta = parameters.beta;
 
     std::cout << "Alpha: " << alpha << endl
               << "Beta: " << beta << endl;
