@@ -14,10 +14,10 @@ vector <vector <double>> get_pos_vectors(int num_particles, int num_dimensions, 
 TEST_CASE("SINGLE PARTICLE FUNCTION") {
     // Set wave function parameters
     INFO("alpha = 0.5");
-    INFO("beta = 1");
+    INFO("beta = 0.5");
     WaveFunctionParameters params;
     params.alpha = 0.5;
-    params.beta = 1;
+    params.beta = 0.5;
 
     // Set global particle parameters
     INFO("Particles have mass = 1");
@@ -66,6 +66,90 @@ TEST_CASE("SINGLE PARTICLE FUNCTION") {
             }
         }
     }
+
+    SECTION("TWO DIMENSIONS") {
+        int num_dimensions = 2;
+        SECTION("PLACED AT THE ORIGIN") {
+            vector<double> position (num_dimensions, 0);
+            Particle particle(position, mass);
+
+            SECTION("TESTING EVALUATION") {
+                REQUIRE(single_particle_function.evaluate(particle) == Approx(1));
+            }
+
+            SECTION("TESTING GRADIENT") {
+                vector<double> grad = single_particle_function.evaluate_gradient(particle);
+                for (auto x : grad)
+                    REQUIRE(x == Approx(0));
+            }
+
+            SECTION("TESTING LAPLACIAN") {
+                REQUIRE(single_particle_function.evaluate_laplacian(particle) == Approx(-2));
+            }
+        }
+
+        SECTION("PLACED AT x=1") {
+            vector<double> position(num_dimensions, 1);
+            Particle particle(position, mass);
+
+            SECTION("TESTING EVALUATION") {
+                REQUIRE(single_particle_function.evaluate(particle) == Approx(exp(-1)));
+            }
+
+            SECTION("TESTING GRADIENT") {
+                vector<double> grad = single_particle_function.evaluate_gradient(particle);
+                for (auto x : grad)
+                   REQUIRE(x == Approx(-exp(-1)));
+            }
+
+            SECTION("TESTING LAPLACIAN") {
+                REQUIRE(single_particle_function.evaluate_laplacian(particle) == Approx(0));
+            }
+        }
+    }
+
+    SECTION("Three DIMENSIONS") {
+        int num_dimensions = 3;
+        SECTION("PLACED AT THE ORIGIN") {
+            vector<double> position (num_dimensions, 0);
+            Particle particle(position, mass);
+
+            SECTION("TESTING EVALUATION") {
+                REQUIRE(single_particle_function.evaluate(particle) == Approx(1));
+            }
+
+            SECTION("TESTING GRADIENT") {
+                vector<double> grad = single_particle_function.evaluate_gradient(particle);
+                for (auto x : grad)
+                    REQUIRE(x == Approx(0));
+            }
+
+            SECTION("TESTING LAPLACIAN") {
+                REQUIRE(single_particle_function.evaluate_laplacian(particle) == Approx(-2.5));
+            }
+        }
+
+        SECTION("PLACED AT x=1") {
+            vector<double> position(num_dimensions, 1);
+            Particle particle(position, mass);
+
+            SECTION("TESTING EVALUATION") {
+                REQUIRE(single_particle_function.evaluate(particle) == Approx(exp(-1.25)));
+            }
+
+            SECTION("TESTING GRADIENT") {
+                vector<double> grad = single_particle_function.evaluate_gradient(particle);
+                   REQUIRE(grad[0] == Approx(-exp(-1.25)));
+                   REQUIRE(grad[1] == Approx(-exp(-1.25)));
+                   REQUIRE(grad[2] == Approx(-0.5*exp(-1.25)));
+            }
+
+            SECTION("TESTING LAPLACIAN") {
+                REQUIRE(single_particle_function.evaluate_laplacian(particle) == Approx(-0.25*exp(-1.25)));
+            }
+        }
+    }
+
 }
 
 
