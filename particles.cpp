@@ -69,3 +69,11 @@ double Particles::compute_distance(int first_particle_idx , int second_particle_
         particles[second_particle_idx]
     );
 }
+
+void Particles::perturb_particle(int particle_idx, vector<double> perturbation) {
+    particles[particle_idx].perturb(perturbation);
+}
+
+void Particles::reject_perturbation(int particle_idx) {
+    particles[particle_idx].reject_perturbation();
+}

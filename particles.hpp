@@ -12,16 +12,11 @@ using namespace std;
 // TODO: Create single particle class
 
 class Particles {
-    vector<double> R;
-    
     vector<Particle> particles;
 
     // Initialisation funcitons
     vector<Particle> init_particles(double mass);
     vector<Particle> init_particles(vector<double> mass);
-    // vector<double> initial_R();
-    // vector<double> initial_r();
-    // vector<double> initial_m(double mass_);
 
     // Arithmetic operations
     double norm(vector<double>& v) const;
@@ -46,6 +41,9 @@ public:
                                                        int second_particle_idx) const;
     double compute_distance  (int first_particle_idx , int second_particle_idx) const;
     double compute_R_squared () const;
+
+    void perturb_particle(int particle_idx, vector<double> perturbation);
+    void reject_perturbation(int particle_idx);
 };
 
 

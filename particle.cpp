@@ -16,12 +16,16 @@ Particle::Particle (int num_dimensions_, double mass) :
 Particle::Particle (const vector<double> r_, double mass) :
     num_dimensions(r_.size()),
     m(mass),
-    r(r_)
-{}
+    r(r_),
+    r_old(r_)
+{
+}
 
 void Particle::initiate_r () {
-    for (int i = 0; i < num_dimensions; ++i)
+    for (int i = 0; i < num_dimensions; ++i) {
         r.push_back(0);
+        r_old.push_back(r[i]);
+    }
 }
 
 double Particle::weighted_norm (const vector<double>& vec,
@@ -67,4 +71,16 @@ double Particle::distance_between (const Particle& particle) const {
 
 double Particle::operator[] (int i) const {
     return r[i];
+}
+
+
+void Particle::perturb(vector<double> pertubation){
+    for (int i = 0; i < num_dimensions; ++i){
+        r_old[i] = r[i];
+        r[i] += pertubation[i];
+    }
+}
+void Particle::reject_perturbation(){
+    for (int i = 0; i < num_dimensions; ++i)
+        r[i] = r_old[i];
 }

@@ -7,7 +7,7 @@ using namespace std;
 
 class Particle {
     vector<double> r;
-    
+    vector<double> r_old;
 
     void initiate_r();
 
@@ -30,6 +30,8 @@ public:
     vector<double> distance_vector(const Particle& particle) const;
     double distance_between(const Particle& particle) const;
     double operator[](int i) const; // TODO: Should this be const and reference?
+    void perturb(vector<double> pertubation);
+    void reject_perturbation();
 };
 
 #endif
