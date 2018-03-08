@@ -5,6 +5,14 @@
 
 using namespace std;
 
+Particles::Particles (ParticlesParams params):
+    num_particles(params.num_particles),
+    num_dimensions(params.num_dimensions)
+{
+for (int i = 0; i < num_particles; ++i)
+    particles.push_back(Particle(num_dimensions, params.mass));
+}
+
 Particles::Particles (int num_particles_, int num_dimensions_, double mass) :
     num_particles(num_particles_),
     num_dimensions(num_dimensions_)

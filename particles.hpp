@@ -9,7 +9,11 @@
 
 using namespace std;
 
-// TODO: Create single particle class
+struct ParticlesParams {
+    int num_particles = 1;
+    int num_dimensions = 3;
+    double mass = 1;
+};
 
 class Particles {
     vector<Particle> particles;
@@ -33,6 +37,7 @@ public:
     Particles (int num_particles_, int num_dimensions_, double mass);
     Particles (vector<vector <double>> positions, double mass);
     Particles (vector<vector <double>> positions, vector<double> mass);
+    Particles (ParticlesParams params);
     
     const Particle& get_particle (int particle_number) const;
     vector<double> compute_distance_vector (int first_particle_idx,
