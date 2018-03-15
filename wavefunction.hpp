@@ -48,8 +48,8 @@ public:
 
     double local_energy (const Particles& particles);
     double evaluate_wavefunction (const Particles& particles);
-    vector<double> quantum_force (const Particles& particles);
-    double second_deriv_wavefunction_quotient (const Particles& particles);
+    vector<vector <double> > quantum_force (const Particles& particles);
+    double kinetic_energy (const Particles& particles);
     double ext_potential (const Particles& particles);
     double int_potential (const Particles& particles);
 

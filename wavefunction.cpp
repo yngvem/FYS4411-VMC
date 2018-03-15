@@ -158,22 +158,23 @@ double WaveFunction::onebody_part (const Particles& particles) {
 
 
 double WaveFunction::local_energy (const Particles& particles) {
-
-    return second_deriv_wavefunction_quotient(particles) + ext_potential(particles)
-          +int_potential(particles);
-
+    return kinetic_energy(particles) + ext_potential(particles)+int_potential(particles);
 }
 
 
-double WaveFunction::ext_potential(const Particles& particles){
+double WaveFunction::ext_potential (const Particles& particles) {
+    vector<double> weights(particles.num_dimensions);
+    for (int i = 0; i < particles.num_dimensions; ++i)
+        weights[i] = parameters.omega_ho;
+    if (particles.num_dimensions == 3)
+        weights[2] = parameters.omega_z;
 
-    vector<double> weights = {parameters.omega_ho, parameters.omega_ho, parameters.omega_z};
     double external_potential = 0;
 
     for (int k = 0; k < particles.num_particles; ++k){
         Particle particle = particles.get_particle(k);
 
-        external_potential += 0.5*particle.m*pow(particle.weighted_distance_from_origin(weights), 2);
+        external_potential += 0.5*particle.m*pow(particle.weighted_distance_from_origin(weights),2);
     }
 
     return external_potential;
@@ -208,8 +209,8 @@ double WaveFunction::evaluate_wavefunction (const Particles& particles) {
 
 // Quantum force = drift force
 // TODO: Test quantum force
-vector<double> WaveFunction::quantum_force (const Particles& particles) {
-    vector<double> force(particles.num_dimensions*particles.num_particles);
+vector<vector <double> > WaveFunction::quantum_force (const Particles& particles) {
+    vector<vector <double> > force(particles.num_dimensions*particles.num_particles);
 
     double psi = evaluate_wavefunction(particles);
     // Compute quantum force per particle
@@ -218,9 +219,9 @@ vector<double> WaveFunction::quantum_force (const Particles& particles) {
         vector<double> single_particle_grad = single_particle_function.evaluate_gradient(
             particles.get_particle(i)
         );
-        vector<double> u_gradient(particles.num_dimensions, 0);
 
         // Pairwise interactions
+        vector<double> u_gradient(particles.num_dimensions, 0);
         for (int j = 0; j < particles.num_particles; ++j) {
             if (j == i) continue;
 
@@ -235,14 +236,14 @@ vector<double> WaveFunction::quantum_force (const Particles& particles) {
 
         // Update force
         for (int j = 0; j < particles.num_dimensions; ++j)
-            force[i*particles.num_dimensions+j] = 2*(single_particle_grad[j] + u_gradient[j])/psi;
+            force[i][j] = 2*(single_particle_grad[j] + u_gradient[j])/psi;
     }
 
     return force;
 }
 
 
-double WaveFunction::second_deriv_wavefunction_quotient (const Particles& particles) {
+double WaveFunction::kinetic_energy (const Particles& particles) {
     double wave_function_quotient;
 
     // Differentiate wrt all particles
