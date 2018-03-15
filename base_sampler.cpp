@@ -1,48 +1,49 @@
 #include <iostream>
 #include <cmath>
+#include <random>
 #include "wavefunction.hpp"
 #include "particles.hpp"
 #include "particle.hpp"
-#include "sampler_base.hpp"
+#include "base_sampler.hpp"
 
 using namespace std;
 
 WaveFunctionParameters params;
 
-SamplerBase::SamplerBase (ParticlesParams particles_params,
+BaseSampler::BaseSampler (ParticlesParams particles_params,
                           WaveFunctionParameters wavefunction_params) :
     particles(Particles(particles_params)),
     wave_function(WaveFunction(wavefunction_params)),
     probability_value(wave_function.evaluate_PDF(particles))
 {}
 
-double SamplerBase::compute_probability(){
+double BaseSampler::compute_probability(){
     return wave_function.evaluate_PDF(particles);
 }
 
-double SamplerBase::local_energy(){
+double BaseSampler::local_energy(){
     return wave_function.local_energy(particles);
 }
 
-/*
-void SamplerBase::MC_step () {
+
+void BaseSampler::MC_step () {
     propose_pertubation();
     double potential_probability = compute_probability();
-
+    double r = uniform(generator);
     if (r > rejction_criteria())
         probability_value = potential_probability;
     else
         reject_perturbation();
 }
-*/
 
-void SamplerBase::warm_up (int num_steps) {
+
+void BaseSampler::warm_up (int num_steps) {
     for (int i = 0; i < num_steps; ++i)
         MC_step();
 }
 
 
-vector<double> SamplerBase::perform_iterations(int num_steps, int memory_frequency) {
+vector<double> BaseSampler::perform_iterations(int num_steps, int memory_frequency) {
     int num_save_steps = num_steps/memory_frequency;
     vector<double> energies(num_save_steps);
     for (int i = 0; i < num_steps; ++i) {
@@ -55,7 +56,7 @@ vector<double> SamplerBase::perform_iterations(int num_steps, int memory_frequen
     return energies;
 }
 
-vector<double> SamplerBase::compute_local_energy(int num_steps) {
+vector<double> BaseSampler::compute_local_energy(int num_steps) {
     double mean_energy;
     double mean_squared_energy;
 
