@@ -3,18 +3,21 @@
 
 #include <iostream>
 #include <cmath>
+#include <random>
 #include "wavefunction.hpp"
 #include "particles.hpp"
 #include "particle.hpp"
 
 using namespace std;
 
-class SamplerBase {
+class BaseSampler {
 
 protected:
     Particles particles;
     WaveFunction wave_function;
     double probability_value;
+    mt19937 generator = mt19937(0);
+    uniform_real_distribution<double> uniform = uniform_real_distribution<double>(0.0,1.0);
 
     virtual void propose_pertubation() = 0;
     virtual void reject_perturbation() = 0;
@@ -30,7 +33,7 @@ public:
     vector<double> perform_iterations(int num_steps, int memory_frequency);
     vector<double> compute_local_energy(int num_steps);
 
-    SamplerBase (ParticlesParams particles_params,
+    BaseSampler (ParticlesParams particles_params,
                  WaveFunctionParameters wavefunction_params);
 };
 
