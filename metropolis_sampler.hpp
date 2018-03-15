@@ -8,6 +8,8 @@
 class MetropolisSampler : public BaseSampler
 {
     double step_size;
+    int current_particle_idx = 0;
+
     void propose_pertubation();
     void reject_perturbation();
     double rejction_criteria();
