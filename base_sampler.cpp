@@ -8,18 +8,21 @@
 
 using namespace std;
 
-WaveFunctionParameters params;
 
 BaseSampler::BaseSampler (ParticlesParams particles_params,
                           WaveFunctionParameters wavefunction_params) :
     particles(Particles(particles_params)),
     wave_function(WaveFunction(wavefunction_params)),
-    probability_value(wave_function.evaluate_PDF(particles))
+    probability_value(wave_function.evaluate_PDF(particles)),
+    generator(mt19937<double>(seed)),
+    uniform(uniform_real_distribution<double>(0.0,1.0))
 {}
+
 
 double BaseSampler::compute_probability(){
     return wave_function.evaluate_PDF(particles);
 }
+
 
 double BaseSampler::local_energy(){
     return wave_function.local_energy(particles);

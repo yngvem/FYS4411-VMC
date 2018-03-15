@@ -16,8 +16,8 @@ protected:
     Particles particles;
     WaveFunction wave_function;
     double probability_value;
-    mt19937 generator = mt19937(0);
-    uniform_real_distribution<double> uniform = uniform_real_distribution<double>(0.0,1.0);
+    mt19937 generator;
+    uniform_real_distribution<double> uniform;
 
     virtual void propose_pertubation() = 0;
     virtual void reject_perturbation() = 0;
@@ -34,7 +34,8 @@ public:
     vector<double> compute_local_energy(int num_steps);
 
     BaseSampler (ParticlesParams particles_params,
-                 WaveFunctionParameters wavefunction_params);
+                 WaveFunctionParameters wavefunction_params,
+                 int seed);
 };
 
 #endif

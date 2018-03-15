@@ -9,9 +9,10 @@
 using namespace std;
 
 MetropolisSampler::MetropolisSampler (double step_size_,
-                                        ParticlesParams particles_params,
-                                        WaveFunctionParameters wavefunction_params) :
-    BaseSampler(particles_params, wavefunction_params),
+                                      ParticlesParams particles_params,
+                                      WaveFunctionParameters wavefunction_params,
+                                      int seed) :
+    BaseSampler(particles_params, wavefunction_params, seed),
     step_size(step_size_)
 {}
 

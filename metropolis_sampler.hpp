@@ -14,7 +14,8 @@ class MetropolisSampler : public BaseSampler
 public:
     MetropolisSampler (double step_size_,
                        ParticlesParams particles_params,
-                       WaveFunctionParameters wavefunction_params);
+                       WaveFunctionParameters wavefunction_params,
+                       int seed);
 };
 
 #endif // METROPOLIS_SAMPLER_HPP
