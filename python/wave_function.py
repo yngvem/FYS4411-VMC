@@ -22,7 +22,7 @@ class SingleParticleFunction:
         self._weights_sq = self._weights**2
 
     def __call__(self):
-        return np.exp(-self.alpha*self.elliptic_distances)
+        return np.exp(-self.alpha*self.elliptic_distances**2)
 
     @property
     def gradient(self):
@@ -129,7 +129,7 @@ class WaveFunction:
         kinetic = self.single_particle_function.relative_laplacian.sum(1)
 
         if self.a == 0:
-           return (0.5*self.hbar/self.particles.mass)*kinetic.sum()
+            return (-0.5*self.hbar/self.particles.mass)*kinetic.sum()
         
         # Intermediate terms used for the pairwise terms
         relative_gradient = self.single_particle_function.relative_gradient
@@ -172,15 +172,17 @@ class WaveFunction:
         u_derivs = self.u_derivatives[..., np.newaxis]
         rel_diffs = self.particles.relative_differences
 
-        return self.single_particle_function.relative_gradient + \
-                0.5*np.sum((u_derivs*rel_diffs), axis=1)
+        return 2*self.single_particle_function.relative_gradient + \
+                np.sum((u_derivs*rel_diffs), axis=1)
 
     @property
     def log_correlation_part(self):
         return 0.5*self.u_matrix.sum()
 
     def __call__(self):
-        single_particle_part = self.single_particle_function().prod()
+        single_particle_part = self.single_particle_function().astype('float128').prod()
+        if self.a == 0:
+            return single_particle_part
         f = self.f
         f[range(self.num_particles), range(self.num_particles)] = 1
         interactions = f.prod()

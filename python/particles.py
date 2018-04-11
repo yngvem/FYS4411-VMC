@@ -36,8 +36,8 @@ class Particles:
         self._positions_changed = True
 
     def _resolve_overlapping_particles(self):
-        overlapping = self.overlapping.copy()
-        overlapping[range(self.num_particlesm), range(self.num_particles)] = False
+        overlapping = self._overlapping.copy()
+        overlapping[range(self.num_particles), range(self.num_particles)] = False
         if not np.any(overlapping):
             return
         
@@ -86,7 +86,7 @@ class Particles:
         if particle_num is None:
             self._positions += perturbation
         else:
-            self._positions += perturbation
+            self._positions[particle_num] += perturbation
 
     def reset_positions(self):
         """Reset positions to previous timestep.
