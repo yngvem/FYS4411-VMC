@@ -176,7 +176,7 @@ This potential describes non-interacting bosons modeled as hard spheres of radiu
 Consequently, $V_{int}(|{r}_i-{r}_j|)$ is zero if the bosons are separated by a distance $|{r}_i-{r}_j|$ greater than $a$ but infinite if they attempt to come within a distance $|{r}_i-{r}_j| \leq a$, i.e., their volumes overlap.
 
 %
-\subsection{The Trail Function}
+\subsection{The Trial Function}
 %
 %
 The trial wave function is used to study the sensitivity of condensate and non-condensate properties to the hard sphere radius and the number of particles.
@@ -252,11 +252,11 @@ The method chosen for this work is the variational Monte-Carlo method (vmc). Bef
 \begin{align*}
 E_0 = \underset{\Vert \psi \Vert=1}{\mathrm{min}}\langle \psi ,H \psi\rangle=\langle H \rangle_{\psi_0} ~.
 \end{align*} 
-Hence, by choosing any trail wave function $\psi_T$ with $\Vert \psi_T\Vert =1$ we get $E_0\leq \langle H \rangle_{\psi_T }$.
+Hence, by choosing any trial wave function $\psi_T$ with $\Vert \psi_T\Vert =1$ we get $E_0\leq \langle H \rangle_{\psi_T }$.
 %
 Using special properties of the Hamilton operator\footnote{
 Careful, linear self-adjoint and bounded operators do not necessarily have an eigen-basis. However, in finite dimensional Hilbert spaces as in computations this is the case.
-} we can expand any trail function in terms of eigenstates, i.e.,
+} we can expand any trial function in terms of eigenstates, i.e.,
 \begin{align*}
 \psi_T=\sum_{i}a_i\psi_i~,
 \end{align*}
@@ -266,7 +266,7 @@ Without loss of generality we assume $\Vert \psi \Vert = 1$ which implies
 \begin{align*}
 E_0\leq \frac{\sum_{i}|a_i|^2E_i}{\sum_{i}|a_i|^2}~.
 \end{align*}
-We see that by varying the trail function's parameter $a_i$, the Rayleigh --Ritz variational principle yields the ground state solution.
+We see that by varying the trial function's parameter $a_i$, the Rayleigh --Ritz variational principle yields the ground state solution.
 %
 Note, that in most cases the wave function has small extension coefficients in large parts of the configuration space, i.e., a straightforward computation using homogeneously distributed points in the configuration space will most likely not be efficient.  
 %
@@ -293,7 +293,7 @@ i.e., the set on which $\lim_{N\to \infty}X_n$ differs from $\mathbb{E}(X_1)$ is
 The above cited version is a stronger version of the \textit{strong law of large numbers} proven by Kolmogorov in 1930 [...] as it only presumes pairwise independence of the random variables. 
 \end{rmk}
 
-For a chosen trail function $\psi_T(R;a)=\sum_{i}a_i\psi_i(R)$ we define the probability density function 
+For a chosen trial function $\psi_T(R;a)=\sum_{i}a_i\psi_i(R)$ we define the probability density function 
 \begin{align*}
 P(R;a) = \frac{|\psi_T(R;a)|^2}{\Vert \psi_T(\cdot\;;a)\Vert}
 \end{align*} 
@@ -447,10 +447,10 @@ In practice, the performances of the algorithm are highly dependent on the choic
 In this work we use $X_t$ perturbed by a normal distribution, i.e., $Y_t\sim X_t+\varepsilon_t$ with $\varepsilon_t\sim \mathcal{N}(0,1)$.
 
 
-\subsubsection{Important Sampling}
+\subsubsection{Importance Sampling}
 %
 %
-Despite the Metropolis--Hasting sampling's simplicity, we replace this brute force algorithm with a walk in coordinate space biased by the trail wave function. 
+Despite the Metropolis--Hasting sampling's simplicity, we replace this brute force algorithm with a walk in coordinate space biased by the trial wave function. 
 %
 This {\it importance sampling} is based on a stochastic differential equation, namely the Langevin equation
 \begin{align*}
@@ -972,7 +972,7 @@ E_L(r_1,\alpha)
 =
 -\frac{\hbar^2}{2m}\left(4\alpha^2r_1^2-2\alpha n\right)+V_{\mathrm{ext}}(r_1)~.
 \end{align*}
-For $N$ particles in $n$ dimensions the trail function reads
+For $N$ particles in $n$ dimensions the trial function reads
 \begin{align*}
 \psi_T(r_1,...,r_N,\alpha,1)
 =
@@ -1002,7 +1002,7 @@ H \psi_T(r_1,\alpha,\beta)
 =
 -\frac{\hbar^2}{2m}\left(4\alpha^2(x^2+y^2+\beta^2z^2)-2\alpha (2+\beta)\right)\psi_T(r_1,\alpha,\beta)+V_{\mathrm{ext}}(r_1)\psi_T(r_1,\alpha,\beta)~,
 \end{align*}
-with the trail function
+with the trial function
 \begin{align*}
 \psi_T(r_1,\alpha,1) = \exp(-\alpha (x^2+y^2+\beta z^2))~.
 \end{align*}
@@ -1012,7 +1012,7 @@ E_{L}(r_1,\alpha,\beta)
 =
 -\frac{\hbar^2}{2m}\left(4\alpha^2(x^2+y^2+\beta^2z^2)-2\alpha (2+\beta)\right)+V_{\mathrm{ext}}(r_1)~.
 \end{align*}
-We conclude for the $N$ particle case for the trail function
+We conclude for the $N$ particle case for the trial function
 \begin{align*}
 \psi_T(r_1,...,r_N,\alpha,\beta) = \exp(-\alpha \sum_{i=1}^{N}(x_i^2+y_i^2+\beta z_i^2))
 \end{align*}
@@ -1035,11 +1035,11 @@ E_L(r_1,...,r_n,\alpha,\beta)
 %
 Another often used quantity is th drift coefficient of the Fokker--Planck equation, i.e.,the quantum force. 
 %
-As we do not want to approximate the gradient of the trail function for every sampling, we derive the expression analytically.
+As we do not want to approximate the gradient of the trial function for every sampling, we derive the expression analytically.
 %
 For the harmonic oscillator potential with $\beta =1$.
 %
-Then the trail function is again given by    
+Then the trial function is again given by    
 \begin{align*}
 \psi_T(r_1,\alpha,1) = \exp(-\alpha r_1^2)~,
 \end{align*}
@@ -1081,7 +1081,7 @@ where $u:\mathbb{R}\to \mathbb{R}$ with $x\mapsto \ln \left(1-\frac{a}{x}\right)
 %
 Using the product rule we find
 \begin{equation}
-\label{eq:gradientTrailFunk}
+\label{eq:gradientTrialFunk}
 \begin{aligned}
 \nabla_k\psi_T(r_1,...,r_N,\alpha,\beta)
 &=
@@ -1111,7 +1111,7 @@ and therewith
 \sum_{i<j}^N\nabla_ku(r_{ij})
 =\sum_{j\neq k;j=1}^N\nabla_k u(r_{kj})~.
 \end{align*}
-From Eq.~\eqref{eq:gradientTrailFunk} we can then derive that the quantum force in the full potential is given by
+From Eq.~\eqref{eq:gradientTrialFunk} we can then derive that the quantum force in the full potential is given by
 \begin{align*}
 F(r_1,...,r_N,\alpha,\beta)
 =
@@ -1123,7 +1123,7 @@ F(r_1,...,r_N,\alpha,\beta)
 \end{align*}
 Deriving another time, we find
 \begin{equation}
-\label{eq:LaplaceTrailFunk}
+\label{eq:LaplaceTrialFunk}
 \begin{aligned}
 &\Delta_k\psi_T(r_1,...,r_N,\alpha,\beta)
 =
@@ -1136,9 +1136,9 @@ Deriving another time, we find
 \prod_{i=1}^N g(\alpha,\beta,{r}_i)\exp{\Bigg(\sum_{i<j}u(r_{ij})\Bigg)}\sum_{j\neq k;j=1}^N\Delta_k u(r_{kj})~.
 \end{aligned}
 \end{equation}
-As for the local energy this needs to be divided by the trail function, we find the following expression for the second derivative
+As for the local energy this needs to be divided by the trial function, we find the following expression for the second derivative
 \begin{equation}
-\label{eq:LaplaceTrailFunkQuot}
+\label{eq:LaplaceTrialFunkQuot}
 \begin{aligned}
 &\frac{\Delta_k\psi_T(r_1,...,r_N,\alpha,\beta)}{\psi_T(r_1,...,r_N,\alpha,\beta)}
 =
