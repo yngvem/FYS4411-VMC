@@ -909,11 +909,85 @@ We here proceed as follow... INTRODUCE ALL THE NECESSARY STUFF...
 
 
 
+\subsection{Numerical optimisation}
+Choosing the ideal trial wave function is an integral part of computing the ground-state energy. The way the ideal trial wave function is found is by computing
+\begin{equation}
+    \text{arg} \min_{\alpha} E_L[\psi(\cdot, \alpha)] = \text{arg} \min_{\alpha} \tilde{E}_L(\alpha), \label{eq:optimisation.problem}
+\end{equation}
+where $\alpha \in \mathbb{R}^k$ is the variational parameter(s) of our trial wavefunction. Thus, a VMC program should also solve a optimisation problem, which will be the focus of the following section.
 
+One way of solving the problem in \cref{eq:optimisation.problem} is by computing the gradient, $\nabla_\alpha E_L(\alpha)$ and finding its roots. This is, unfortunately, an NP-hard problem in general [CITE HERE] and numerical optimisation methdos is therefore used instead.
 
+The main class of optimisation methods we will consider is decent-direction based algorithms [SOME CITE HERE]. A descent direction of $\tilde{E}_L: \mathbb{R}^k \to \mathbb{R}$ in $\alpha_i \in \mathbb{R}^k$ is a vector $\bm{p}_i \in \mathbb{R}^k$ such that
+\begin{equation}
+    \tilde{E}_L(\alpha_i + \xi_i \bm{p}_i) < \tilde{E}_L(\alpha_i),
+\end{equation}
+for all $\xi_i < \epsilon_i$, with $\epsilon_i$ being some (often unknown) real number. To put it informally, a descent direction is a direction where the function decreases. How these directions are found will be discussed later, first we introduce descent direction based algorithms.
 
+\begin{algorithm}
+	\caption{Descen-direction based optimisation}
+	\label{Alg:descentOptimisation}
+	\begin{algorithmic}[1]
+        \State Start with initial $\alpha_0$
+        \Procedure{Minimise $\tilde{E}_L$}{}
+        \State Set $i = 0$.
+        \While{$\alpha$ not converged}
+        \State Find a descent direction, $\bm{p}_i$
+        \State Find a $\xi_i$ that gives a sufficent decrease.
+        \State Set $\alpha_{i+1} = \alpha_i + \xi_i \bm{p}_i$.
+        \State $i \gets i + 1$
+        \EndWhile
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
 
+Thus, descent-direction based optimisation algorithms work by updating $\alpha_i$ such that the target-function, $\tilde{E}_L$, decreases every iteration. There are two parts of the above algorithm that needs to be specified, the first is how the step-size, $\xi_i$ is found and the second is how the descent direction is found. 
 
+Ideally, one wants to find the optimal step-size, however, that entails solving a optimisation problem itself, which can be computationally inefficient. Solving this optimisation problem is often reffered to as an \emph{exact line search} [CITE NOCEDAL]. An alternative to this is to test different step-sizes until some heuristic is fulfilled instead. One example of such a heuristic is the Wolfe conditions, which states that the a sufficient step size, $\xi_i$ is a step size that satisfies
+\begin{equation}
+    \tilde{E}_L(\alpha_i + \xi_i \bm{p}_i) \leq \tilde{E}_L(\alpha_i) + c_1\xi_i \nabla \tilde{E}_L(\alpha_i)^T\bm{p}_i,
+\end{equation}
+and
+\begin{equation}
+    |\nabla \tilde{E}_L(alpha_i + \xi_i \bm{p}_i)^T\bm{p}_i| < c_2 |\nabla \tilde{E}_L(\alpha_i)^T \bm{p}_i |,
+\end{equation}
+for some $0 < c_i < c_2 < 1$ [CITE NOCEDAL]. This is called an \emph{inexact line search}. The first condition ensures that the decrease is sufficient, and the second condition ensures that the slope of the function has changed sufficiently. A result of the slope changing sufficiently is that the step-size is not chosen arbitrarily small, which is a possibility if this condition is left out.
+
+Now, we focus on computing the descent direction. The first algorithm we discuss here is the gradient descent, or steepest descent algorithm. In this case, the descent-direction is chosen to be the direction where the function decreases most rapidly (locally). Incidentally, this is equivalent to setting $\bm{p}_i = -\nabla \tilde{E}_L$, which gives the algorithm its name, "gradient descent" [CITE NOCEDAL].
+
+Another way of computing the descent-direction is performing a second degree Taylor approximation of $\tilde{E}_L$ and finding the direction pointing towards the minimum of this approximation. This is equivalent to finding a descent direction that satisfies
+\begin{equation}
+    (\nabla^2 \tilde{E}_L(\alpha_i))\bm{p}_i = -\nabla \tilde{E}_L,
+\end{equation}
+where $(\nabla^2 \tilde{E}_L(\alpha_i))$ is the Hessian matrix of $\tilde{E}_L$. This algorithm is called Newton's method. The main difference between Newton's method and gradient descent is that Newton's method takes the (local) curvature of the target function in consideration when finding a descent direction, whereas gradient descent does not [CITE NOCEDAL]. Considering this curvature information rapidly speeds up the convergence rate, from the linear convergence of gradient descent to quadratic convergence [CITE NOCEDAL].
+
+There are two downsides Newton's method. The first downside is that it requires the computation of the Hessian matrix, which may be time-consuming. The second downside is that it involves solving a, often dense, linear set of equations, which has cubic complexity with respect to the dimensionality of $\alpha$. As a way to combat these shortcomings, several \emph{quasi Newton methods} exist,such as the "Broyden-Fletcher-Goldfarb-Shanno algorithm" (or BFGS) and the "Limited memory Broyden-Fletcher-Goldfarb-Shanno algorithm" (or L-BFGS). The idea of these algorithms is to estimate curvature information of the function instead of computing it explicitly and to (hopefully) do this in a matrix that is easy to invert [CITE NOCEDAL].
+
+We want to conclude by noting that there is no difference between any of the descent-direction based algorithms in one dimension, as there is only a single descent direction in 1D. Thus, in 1D optimisation, the goal is equivalently to performing a single exact line search. One way of doing this is via the \emph{bisection algorithm}. The bisection algorithm is a divide-and-conquer algorithm to find the roots of a 1D, continuous, function (in our case, $\frac{d\tilde{E}_L(\alpha)}{d\alpha}$) and is specified below.
+
+\begin{algorithm}
+    \caption{Bisection method for finding roots}
+    \label{Alg:bisection}
+    \begin{algorithmic}[1]
+        \State Initiate $\alpha_L$ s.t. $\tilde{E}_L'(\alpha_L) < 0$
+        \State Initiate $\alpha_U$ s.t. $\tilde{E}_L'(\alpha_L) > 0$
+        \Procedure{Compute roots of $\tilde{E}_L'(\alpha)$}{}
+            \While{$|\alpha_L - \alpha_U| > \epsilon$}
+                \State $\alpha_T \gets \frac{\alpha_L + \alpha_U}{2}$
+
+                \If{$\tilde{E}_L'(\alpha_T) < 0$}
+                    \State $\alpha_L \gets \alpha_T$
+                \ElseIf{$\tilde{E}_L'(\alpha_T) > 0$}
+                    \State $\alpha_U \gets \alpha_T$
+                \ElseIf{$\tilde{E}_L'(\alpha_T) = 0$}
+                    \State $\alpha_T$ is a root of $\tilde{E}_L'(\alpha)$
+                \EndIf
+            \EndWhile
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+Thus, the idea of the bisection method is to have an interval where we are certain a root of $\tilde{E}_L'(\alpha)$ is and then half that interval each iteration, making sure that we keep the half that we are sure a root is in. One reason for the popularity of this algorithm is that the length of the interval, $|\alpha_L - \alpha_R|$, shrinks exponentially, which yields an efficient and easily implementable algorithm. For these reasons, we decided to use the bisection algorithm in our VMC calculations.
 
 % Code/Implementations/test: 
 %Here you should discuss how you implemented the algorithms, how you tested the algorithms,
@@ -921,9 +995,24 @@ We here proceed as follow... INTRODUCE ALL THE NECESSARY STUFF...
 %and possible benchmark calculations.  Clarity of codes are also included in the evaluation.
 %Total number of possible points 20
 \section{Implementation}
-%
-%
-%
+With this report follows a Python package for VMC calculations. The code follows the PEP-8 style guide and is documented using docstrings. Furthermore, Jupyter notebooks that demonstrate how to use the package is supplied. The following sections will describe how the code is structured and certain features used to optimise its runtime. Finally, we discuss some future steps that can be done to significantly speed up the computations.
+
+\subsection{Class structure}
+The package is structured using a hierarchy of classes, of which, the \texttt{Particle} class is at the lowest layer. A two-dimensional Numpy array of shape $n$-by-$d$, where $n$ is the number of particles and $d$ is the dimensionality of each particle's position vector, is used to store the positions of every particle. Furthermore, the distance between every particle is stored in an $n$-by-$n$ matrix and the difference between every particle is stored in an $n$-by-$n$-by-$d$ array. In addition to this, a boolean matrix is used to store whether any particles overlap, that is if the distance between two particles is less than their hard-core diameter. 
+
+Furthermore, the particles class stores not only the current position of the particles, but also the previous position and all of their differences and distances, which reduces compute-time whenever a perturbation is rejected. The way this is done is by having two function, one named \texttt{perturb\_particle}, which updates the \texttt{\_old\_positions} and the \texttt{\_positions} matrices, if the perturbation is rejected, the \texttt{\_positions} matrix is set to be equal the \texttt{\_old\_positions} matrix. All differences and distances are lazily evaluated, and old versions of these are also stored so that they can be restored when a perturbation is rejected.
+
+The next class is the \texttt{SingleParticleFunction} class, which has a \texttt{particles} attribute that specifies which \texttt{Particles} instance it should evaluate the the value of the single-particle function ($\phi(\bm{r_i})$), its relative gradient ($\frac{\nabla \phi(\bm{r}_i)}{\phi(\bm{r}_i)}$) and its relative laplacian ($\frac{\Delta \phi(\bm{r}_i)}{\phi(\bm{r}_i)}$ for.
+
+The \texttt{WaveFunction}, as the name implies, computes the specifics of the wave-function of the system. It contains a \texttt{particles} attribute, that also specifies which particles to consider. The \texttt{WaveFunction} class also has a \texttt{single\_particle\_function} attribute which is an instance of the \texttt{SingleParticleFunction} that share the same \texttt{Particles} instance as the parent \texttt{WaveFunction}. The \texttt{WaveFunction} class allows computation of the current local energy, the quantum force and the value of the wave-function at the particle's current position.
+
+Finally, the \texttt{Sampler} classes allow for MCMC computations of the specified trial wave-function and hamiltonian, stored in the \texttt{wave\_function} attribute. The only difference between the \texttt{MetropolisSampler} and the \texttt{ImportanceSampler} are the \texttt{propose\_perturbation} and the \texttt{rejection\_criteria}, thus, all but these functions are implemented in the \texttt{Sampler} super-class from which the specific sampler classes inherits all information.
+
+\subsection{Optimisation procedures}
+Several steps were done to optimise the runtime of the code. Firstly, the
+
+
+%%
 In this section we present the implementation we used to derive next section's results. 
 %
 [SOMETHING]\\
