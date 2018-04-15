@@ -11,6 +11,10 @@
 \usepackage{stmaryrd}
 \usepackage{scrpage2} 
 \usepackage{color}
+\usepackage{bm}
+\usepackage{varioref}
+\usepackage{hyperref}
+\usepackage{cleveref}
 \usepackage{tikz}
 \usetikzlibrary{shapes.misc} 
 
@@ -1013,28 +1017,6 @@ We finalize this section by presenting a pseudo-code for the automatic blocking 
 
 
 
-<<<<<<< HEAD
-
-=======
-\subsection{Numerical optimisation}
-Choosing the ideal trial wave function is an integral part of computing the ground-state energy. The way the ideal trial wave function is found is by computing
-\begin{equation}
-    \text{arg} \min_{\alpha} E_L[\psi(\cdot, \alpha)] = \text{arg} \min_{\alpha} \tilde{E}_L(\alpha), \label{eq:optimisation.problem}
-\end{equation}
-where $\alpha \in \mathbb{R}^k$ is the variational parameter(s) of our trial wavefunction. Thus, a VMC program should also solve a optimisation problem, which will be the focus of the following section.
-
-One way of solving the problem in \cref{eq:optimisation.problem} is by computing the gradient, $\nabla_\alpha E_L(\alpha)$ and finding its roots. This is, unfortunately, an NP-hard problem in general [CITE HERE] and numerical optimisation methdos is therefore used instead.
-
-The main class of optimisation methods we will consider is decent-direction based algorithms [SOME CITE HERE]. A descent direction of $\tilde{E}_L: \mathbb{R}^k \to \mathbb{R}$ in $\alpha_i \in \mathbb{R}^k$ is a vector $\bm{p}_i \in \mathbb{R}^k$ such that
-\begin{equation}
-    \tilde{E}_L(\alpha_i + \xi_i \bm{p}_i) < \tilde{E}_L(\alpha_i),
-\end{equation}
-for all $\xi_i < \epsilon_i$, with $\epsilon_i$ being some (often unknown) real number. To put it informally, a descent direction is a direction where the function decreases. How these directions are found will be discussed later, first we introduce descent direction based algorithms.
->>>>>>> ced4ec807dfb08b5019d1f6850e2f18057a94eef
-
-
-
-
 \subsection{Numerical optimisation}
 Choosing the ideal trial wave function is an integral part of computing the ground-state energy. The way the ideal trial wave function is found is by computing
 \begin{equation}
@@ -1113,7 +1095,7 @@ Next, we introduce the \texttt{Sampler} classes, which allow for MCMC computatio
 Finally, there is a \texttt{VMC} class, which works as a wrapper for the \texttt{Sampler} classes and allows for optimisation of the variational parameter. Furthermore, this class allows for easy parallel processing using joblib.
 
 \subsection{Optimisation procedures}
-Several steps were done to optimise the runtime of the code. Firstly, the \texttt{__setstate__} and \texttt{__getstate__} functions were created for the \texttt{WaveFunction} class to allow for easy serialisation (in Python known as pickling). This makes it possible to use the Multiprocessing module for parallel computation. The way parallel computation should be performed is that each process should spawn a separate \texttt{Sampler} instance with seed specified to be the process id.
+Several steps were done to optimise the runtime of the code. Firstly, the \texttt{\_\_setstate\_\_} and \texttt{\_\_getstate\_\_} functions were created for the \texttt{WaveFunction} class to allow for easy serialisation (in Python known as pickling). This makes it possible to use the Multiprocessing module for parallel computation. The way parallel computation should be performed is that each process should spawn a separate \texttt{Sampler} instance with seed specified to be the process id.
 
 Furthermore, the datastructure used to store the particles positions is a Numpy array. Thus, one particle's position is stored adjacently in memory, and all the particle's positions are stored as a single contiguous block of RAM. This allows for "single instruction, multiple data" (SIMD) to be used to optimise all operations done on the particles, which is used for all computations in this project.
 
