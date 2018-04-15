@@ -11,7 +11,10 @@
 \usepackage{stmaryrd}
 \usepackage{scrpage2} 
 \usepackage{color}
-
+\usepackage{bm}
+\usepackage{varioref}
+\usepackage{hyperref}
+\usepackage{cleveref}
 \usepackage{tikz}
 \usetikzlibrary{shapes.misc} 
 
@@ -309,10 +312,10 @@ where $E_L(R;a) = H\psi_T(R;a)/\psi_T(R;a)$ denotes the local energy.
 We see that the last term corresponds to an integration with respect to the probability measure $\mathbb{P}$ induced by the density $P$.
 %
 By \textbf{Etemadi} this yields
-\begin{align*}
+\begin{equation}
 \label{eq:StrongLawofBN}
 \frac{1}{N}\sum_{n=1}^NP(R_i;a)E_L(R_i;a)\overset{a.s}{\longrightarrow}\langle H \rangle_{\psi_T(\cdot\;;a)}~.
-\end{align*}
+\end{equation}
 We emphasize, that in the setting of Monte--Carlo methods, the number of pairwise identically distributed, independent variables $N$ corresponds to the number of  Monte--Carlo samples.\\
 \\
 GO INTO DETAILS, HOW OUR COMPUTATIONS WORK!!!\\
@@ -930,11 +933,11 @@ for all $\xi_i < \epsilon_i$, with $\epsilon_i$ being some (often unknown) real 
 	\begin{algorithmic}[1]
         \State Start with initial $\alpha_0$
         \Procedure{Minimise $\tilde{E}_L$}{}
-        \State Set $i = 0$.
+        \State $i \gets 0$.
         \While{$\alpha$ not converged}
         \State Find a descent direction, $\bm{p}_i$
         \State Find a $\xi_i$ that gives a sufficent decrease.
-        \State Set $\alpha_{i+1} = \alpha_i + \xi_i \bm{p}_i$.
+        \State $\alpha_{i+1} \gets \alpha_i + \xi_i \bm{p}_i$.
         \State $i \gets i + 1$
         \EndWhile
 		\EndProcedure
@@ -963,31 +966,7 @@ where $(\nabla^2 \tilde{E}_L(\alpha_i))$ is the Hessian matrix of $\tilde{E}_L$.
 
 There are two downsides Newton's method. The first downside is that it requires the computation of the Hessian matrix, which may be time-consuming. The second downside is that it involves solving a, often dense, linear set of equations, which has cubic complexity with respect to the dimensionality of $\alpha$. As a way to combat these shortcomings, several \emph{quasi Newton methods} exist,such as the "Broyden-Fletcher-Goldfarb-Shanno algorithm" (or BFGS) and the "Limited memory Broyden-Fletcher-Goldfarb-Shanno algorithm" (or L-BFGS). The idea of these algorithms is to estimate curvature information of the function instead of computing it explicitly and to (hopefully) do this in a matrix that is easy to invert [CITE NOCEDAL].
 
-We want to conclude by noting that there is no difference between any of the descent-direction based algorithms in one dimension, as there is only a single descent direction in 1D. Thus, in 1D optimisation, the goal is equivalently to performing a single exact line search. One way of doing this is via the \emph{bisection algorithm}. The bisection algorithm is a divide-and-conquer algorithm to find the roots of a 1D, continuous, function (in our case, $\frac{d\tilde{E}_L(\alpha)}{d\alpha}$) and is specified below.
-
-\begin{algorithm}
-    \caption{Bisection method for finding roots}
-    \label{Alg:bisection}
-    \begin{algorithmic}[1]
-        \State Initiate $\alpha_L$ s.t. $\tilde{E}_L'(\alpha_L) < 0$
-        \State Initiate $\alpha_U$ s.t. $\tilde{E}_L'(\alpha_L) > 0$
-        \Procedure{Compute roots of $\tilde{E}_L'(\alpha)$}{}
-            \While{$|\alpha_L - \alpha_U| > \epsilon$}
-                \State $\alpha_T \gets \frac{\alpha_L + \alpha_U}{2}$
-
-                \If{$\tilde{E}_L'(\alpha_T) < 0$}
-                    \State $\alpha_L \gets \alpha_T$
-                \ElseIf{$\tilde{E}_L'(\alpha_T) > 0$}
-                    \State $\alpha_U \gets \alpha_T$
-                \ElseIf{$\tilde{E}_L'(\alpha_T) = 0$}
-                    \State $\alpha_T$ is a root of $\tilde{E}_L'(\alpha)$
-                \EndIf
-            \EndWhile
-        \EndProcedure
-    \end{algorithmic}
-\end{algorithm}
-
-Thus, the idea of the bisection method is to have an interval where we are certain a root of $\tilde{E}_L'(\alpha)$ is and then half that interval each iteration, making sure that we keep the half that we are sure a root is in. One reason for the popularity of this algorithm is that the length of the interval, $|\alpha_L - \alpha_R|$, shrinks exponentially, which yields an efficient and easily implementable algorithm. For these reasons, we decided to use the bisection algorithm in our VMC calculations.
+We want to conclude by noting that there is no difference between any of the descent-direction based algorithms in one dimension, as there is only a single descent direction in 1D. Thus, in 1D optimisation, the goal is equivalently to performing a single exact line search. This can, as noted earlier, be difficult in practice, especially when the function value and gradient is expensive to evaluate (which they are, as evaluating them entails a high dimensional integral). It can, however, bee shown that gradient descent converge to a local minimum if the step-size $\xi_i \leq \frac{2}{L}$, where $L$ is a Lipshitz constant of $E_L$, alternatively [cite]. If the step-size $\xi_i$ approaches zero as $i \to \infty$, this is guaranteed which yields convergence. We therefore choose such an optimisation scheme.
 
 % Code/Implementations/test: 
 %Here you should discuss how you implemented the algorithms, how you tested the algorithms,
@@ -1006,10 +985,16 @@ The next class is the \texttt{SingleParticleFunction} class, which has a \texttt
 
 The \texttt{WaveFunction}, as the name implies, computes the specifics of the wave-function of the system. It contains a \texttt{particles} attribute, that also specifies which particles to consider. The \texttt{WaveFunction} class also has a \texttt{single\_particle\_function} attribute which is an instance of the \texttt{SingleParticleFunction} that share the same \texttt{Particles} instance as the parent \texttt{WaveFunction}. The \texttt{WaveFunction} class allows computation of the current local energy, the quantum force and the value of the wave-function at the particle's current position.
 
-Finally, the \texttt{Sampler} classes allow for MCMC computations of the specified trial wave-function and hamiltonian, stored in the \texttt{wave\_function} attribute. The only difference between the \texttt{MetropolisSampler} and the \texttt{ImportanceSampler} are the \texttt{propose\_perturbation} and the \texttt{rejection\_criteria}, thus, all but these functions are implemented in the \texttt{Sampler} super-class from which the specific sampler classes inherits all information.
+Next, we introduce the \texttt{Sampler} classes, which allow for MCMC computations of the specified trial wave-function and hamiltonian, stored in the \texttt{wave\_function} attribute. The only difference between the \texttt{MetropolisSampler} and the \texttt{ImportanceSampler} are the \texttt{propose\_perturbation} and the \texttt{rejection\_criteria}, thus, all but these functions are implemented in the \texttt{Sampler} super-class from which the specific sampler classes inherits all information.
+
+Finally, there is a \texttt{VMC} class, which works as a wrapper for the \texttt{Sampler} classes and allows for optimisation of the variational parameter. Furthermore, this class allows for easy parallel processing using joblib.
 
 \subsection{Optimisation procedures}
-Several steps were done to optimise the runtime of the code. Firstly, the
+Several steps were done to optimise the runtime of the code. Firstly, the \texttt{__setstate__} and \texttt{__getstate__} functions were created for the \texttt{WaveFunction} class to allow for easy serialisation (in Python known as pickling). This makes it possible to use the Multiprocessing module for parallel computation. The way parallel computation should be performed is that each process should spawn a separate \texttt{Sampler} instance with seed specified to be the process id.
+
+Furthermore, the datastructure used to store the particles positions is a Numpy array. Thus, one particle's position is stored adjacently in memory, and all the particle's positions are stored as a single contiguous block of RAM. This allows for "single instruction, multiple data" (SIMD) to be used to optimise all operations done on the particles, which is used for all computations in this project.
+
+There are mainly one optimisation step that can be performed to increase the runtime of the programme, namely to optimise the $\sum_{i=1}^n \sum_{j=1}^n -\frac{(\bm{r}_i - \bm{r}_k)(\bm{r}_k - \bm{r}_j)}{r_{ik}r_{kj}}u'(r_{ik})u'(r_{kj})$ sum which is computed for each particle. Each iteration, which is the only term that has a computational complexity of $O(n^3)$ every iteration. To optimise this, we note that the sum can be regarded as a 
 
 
 %%
@@ -1310,3 +1295,4 @@ This together with the analytic expression for the harmonic oscillator yields an
 
 
 \end{document}
+
