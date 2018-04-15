@@ -1017,7 +1017,6 @@ We finalize this section by presenting a pseudo-code for the automatic blocking 
 
 
 
-
 \subsection{Numerical optimisation}
 Choosing the ideal trial wave function is an integral part of computing the ground-state energy. The way the ideal trial wave function is found is by computing
 \begin{equation}
@@ -1101,8 +1100,6 @@ Several steps were done to optimise the runtime of the code. Firstly, the \textt
 Furthermore, the datastructure used to store the particles positions is a Numpy array. Thus, one particle's position is stored adjacently in memory, and all the particle's positions are stored as a single contiguous block of RAM. This allows for "single instruction, multiple data" (SIMD) to be used to optimise all operations done on the particles, which is used for all computations in this project.
 
 There are mainly one optimisation step that can be performed to increase the runtime of the programme, namely to optimise the $\sum_{i=1}^n \sum_{j=1}^n -\frac{(\bm{r}_i - \bm{r}_k)(\bm{r}_k - \bm{r}_j)}{r_{ik}r_{kj}}u'(r_{ik})u'(r_{kj})$ sum which is computed for each particle. Each iteration, which is the only term that has a computational complexity of $O(n^3)$ every iteration. To optimise this, we note that the sum can be regarded as a 
-
-
 %%
 In this section we present the implementation we used to derive next section's results. 
 %
