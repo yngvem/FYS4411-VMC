@@ -1,0 +1,22 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{The Hard Sphere Bose Gas' Quantum Mechanical Model}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{The Trapped Hard Sphere Bose Gas}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{The Trial Function}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Variational Monte Carlo Method and Statistical Analysis}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Variational Monte Carlo Method}{section.3}% 6
+\BOOKMARK [3][-]{subsubsection.3.1.1}{Metropolis Sampling}{subsection.3.1}% 7
+\BOOKMARK [3][-]{subsubsection.3.1.2}{Importance Sampling}{subsection.3.1}% 8
+\BOOKMARK [2][-]{subsection.3.2}{Statistical Analysis}{section.3}% 9
+\BOOKMARK [3][-]{subsubsection.3.2.1}{Bootstrapping}{subsection.3.2}% 10
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Blocking}{subsection.3.2}% 11
+\BOOKMARK [2][-]{subsection.3.3}{Numerical optimisation}{section.3}% 12
+\BOOKMARK [1][-]{section.4}{Implementation}{}% 13
+\BOOKMARK [2][-]{subsection.4.1}{Class structure}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.2}{Optimisation procedures}{section.4}% 15
+\BOOKMARK [3][-]{subsubsection.4.2.1}{Harmonic Oscillator Potential}{subsection.4.2}% 16
+\BOOKMARK [3][-]{subsubsection.4.2.2}{Quantum Force for the Harmonic Oscillator Potential}{subsection.4.2}% 17
+\BOOKMARK [3][-]{subsubsection.4.2.3}{The Local Energy in the full Potential}{subsection.4.2}% 18
+\BOOKMARK [2][-]{subsection.4.3}{The Repulsive Interaction}{section.4}% 19
+\BOOKMARK [3][-]{subsubsection.4.3.1}{Change units of Length}{subsection.4.3}% 20
+\BOOKMARK [1][-]{section.5}{Numerical Results}{}% 21
+\BOOKMARK [1][-]{section.6}{Conclusion and Perspectives}{}% 22

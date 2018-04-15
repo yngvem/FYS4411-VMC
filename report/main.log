@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2017.12.13)  15 APR 2018 14:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2017.12.13)  15 APR 2018 14:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -932,18 +932,18 @@ Document Style - pseudocode environments for use with the `algorithmicx' style
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -1056,22 +1056,22 @@ ABD: EveryShipout initializing macros
 <uio.png, id=4, 2474.24374pt x 2223.30624pt>
 File: uio.png Graphic file (type png)
 <use uio.png>
-Package pdftex.def Info: uio.png  used on input line 49. on input line 49.
+Package pdftex.def Info: uio.png  used on input line 48. on input line 48.
 Package pdftex.def Info: Requested size: 167.2989pt x 150.32114pt on input line
- 49.
-LaTeX Font Info:    Try loading font information for U+msa on input line 61.
+ 48.
+LaTeX Font Info:    Try loading font information for U+msa on input line 60.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 61.
+LaTeX Font Info:    Try loading font information for U+msb on input line 60.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+stmry on input line 61.
+LaTeX Font Info:    Try loading font information for U+stmry on input line 60.
 
 (/usr/share/texlive/texmf-dist/tex/latex/stmaryrd/Ustmry.fd)
-LaTeX Font Info:    Try loading font information for U+rsfs on input line 61.
+LaTeX Font Info:    Try loading font information for U+rsfs on input line 60.
 
 (/usr/share/texlive/texmf-dist/tex/latex/jknapltx/ursfs.fd
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
@@ -1095,96 +1095,96 @@ File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 \openout6 = `main.lot'.
 
  [5] [1] [2] [3]
-Underfull \hbox (badness 10000) in paragraph at lines 292--295
+Underfull \hbox (badness 10000) in paragraph at lines 291--294
 
  []
 
 [4]
-Underfull \hbox (badness 10000) in paragraph at lines 335--341
+Underfull \hbox (badness 10000) in paragraph at lines 334--340
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 335--341
+Underfull \hbox (badness 10000) in paragraph at lines 334--340
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 335--341
+Underfull \hbox (badness 10000) in paragraph at lines 334--340
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 346--362
+Underfull \hbox (badness 10000) in paragraph at lines 345--361
 
  []
 
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 381--383
+Underfull \hbox (badness 10000) in paragraph at lines 380--382
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 393--394
+Underfull \hbox (badness 10000) in paragraph at lines 392--393
 
  []
 
 [6] [7]
-Overfull \hbox (11.94995pt too wide) in paragraph at lines 522--522
+Overfull \hbox (11.94995pt too wide) in paragraph at lines 521--521
 [] 
  []
 
 [8]
-Overfull \hbox (47.35388pt too wide) in paragraph at lines 554--554
+Overfull \hbox (47.35388pt too wide) in paragraph at lines 553--553
 [] 
  []
 
 
-Overfull \hbox (48.41862pt too wide) in paragraph at lines 570--570
+Overfull \hbox (48.41862pt too wide) in paragraph at lines 569--569
 [] 
  []
 
 
-Overfull \hbox (23.49478pt too wide) in paragraph at lines 587--587
+Overfull \hbox (23.49478pt too wide) in paragraph at lines 586--586
 [] 
  []
 
 [9]
-Underfull \hbox (badness 10000) in paragraph at lines 606--612
+Underfull \hbox (badness 10000) in paragraph at lines 605--611
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 615--616
+Underfull \hbox (badness 10000) in paragraph at lines 614--615
 
  []
 
 
-Overfull \hbox (22.61418pt too wide) in paragraph at lines 660--660
+Overfull \hbox (22.61418pt too wide) in paragraph at lines 659--659
 [] 
  []
 
 [10]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 742.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 741.
 
  (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 742.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 741.
  [11] [12]
 [13] [14]
-Underfull \hbox (badness 10000) in paragraph at lines 941--943
+Underfull \hbox (badness 10000) in paragraph at lines 940--942
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 944--945
+Underfull \hbox (badness 10000) in paragraph at lines 943--944
 
  []
 
 [15] [16]
-Overfull \hbox (25.27684pt too wide) in paragraph at lines 1109--1109
+Overfull \hbox (25.27684pt too wide) in paragraph at lines 1108--1108
 [] 
  []
 
