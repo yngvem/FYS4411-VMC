@@ -111,37 +111,54 @@ In order to obtain results that can be utilized in practice, an extremely high a
 %
 On the other hand, solving the governing equation of quantum mechanics, the molecular Schr\"odinger equation, is an exceedingly high-dimensional and thus computationally demanding problem.
 %
-Due to this very unfortunate combination of demanded high accuracy on the one side and the computational bad scaling on the other, small to medium-sized quantum chemical problems are still push the limits of commonly available computational resources.
+Due to this very unfortunate combination of demanded high accuracy on the one side and the computational bad scaling on the other, small to medium-sized quantum chemical problems are still pushing the limits of commonly available computational resources.
 
 %
 In this project we focus on $N$-particle bosonic systems, i.e., particles that follow {\it Bose--Einstein statistics}.
 %
 We present a computational study of the system's ground-state energy using statistical methods. 
-
 %
 This work is outlined as follows:
+
 %
 We start by introducing the considered bosonic system in a more detailed, and for our approaches suitable, way in Section 2. 
 %
-A for this project appropriate detailed and mathematical rigorous description of the computational schemes is presented in Section 3.  
-
-\section{The Hard Sphere Bose Gas' Quantum Mechanical Model}
-[...]
-Thus, improved many-body methods like Monte Carlo calculations may be needed.  
+We describe the quantum mechanical model we use to quantify hard sphere Bose gas in an elliptic trap (this covers in particular the special case of a spherical trap). 
 %
-The aim of this project is to use the Variational Monte Carlo (VMC) method and evaluate the ground state energy of a trapped, hard
-sphere Bose gas for different numbers of particles with a specific trial wave function.
+In Section 3 we present the Monte Carlo method and the used statistical tools in a formal and mathematical rigorous way.
+%
+We introduce Markov processes, in discrete and continuous time, as the mathematical concept on which we build the Monte Carlo method and two sampling methods, namely, the metropolis sampling and the importance sampling. 
+%
+The later will make excessive use of the Fokker--Planck and the Langevin equation. 
+%
+As the focus of this work is on a computational study, we do not introduce the concept of stochastic differential equations, however, we present a {\it quick and dirty} derivation of the Fokker--Planck equation via the {\it Kramers--Moyal} expansion.
+%
+To present our computed data with a proper evaluation of the statical errors we introduce the {\it Bootstrap} and the {\it Blocking} method.
+%
+In Section 4 we present the implementation used in this project. 
+%
+We hereby follow the project description, starting with deriving analytic expressions for the {\it local energy} in different potentials.
+%
+In Section 5 we present our numerical results. 
+
+
+\section{The Hard Sphere Bose Gas' Quantum Mechanical Model} 
+%
+The aim of this project is to evaluate the ground state energy of a trapped, hard sphere Bose gas for different numbers of particles considering a specific trial wave function $\psi_T$.
 %
 This trial wave function is used to study the sensitivity of condensate and non-condensate properties to the hard sphere radius and the number of particles.  
 %
+We start this section by introducing the quantum mechanical model used to describe a trapped hard sphere Bose Gas.
+%
+Note that this model involves a {\it formal error}, i.e., an error that follows from not knowing the exact theory to describe the physical behavior of atomic and subatomic particles. 
+%
+  
 
 \subsection{The Trapped Hard Sphere Bose Gas}
 %
-In this work we study the ground state energy of a trapped, hard sphere Bose gas
-[BOSE GAS...]
+In this work we study the ground state energy of a trapped, hard sphere Bose gas, i.e., a gas composed of bosons, which have an integer value of spin and obey {\it Bose--Einstein statistics}.
 %
-The trap we use is a spherical (S) or an elliptical (E) harmonic trap in one, two and finally three dimensions, with the latter given by
-
+The trap we use in this project is a {\it spherical} (S) or an {\it elliptical} (E) harmonic trap in one, two and finally three dimensions, with the latter given by
 \begin{equation}
 V_{ext}(r) = 
 \Bigg\{
@@ -157,7 +174,7 @@ The considered two-body Hamiltonian is formally defined by
 H\psi(r) = \sum_i^N \left(\frac{-\hbar^2}{2m}{\nabla }_{i}^2 +V_{ext}({{r}}_i)  +
 \sum_{i<j}^{N} V_{int}({{r}}_i,{{r}}_j)\right)\psi(r)~,
 \end{equation}
-where $\omega_{ho}^2$ defines the trap potential strength and $r = (r_1,...,r_N)$.  
+where $\omega_{ho}^2$ defines the {\it trap potential strength} and $r = (r_1,...,r_N)$.  
 %
 In the case of the elliptical trap, $\omega_{ho}$ is the trap frequency in the {\it perpendicular plane}, i.e., the $x$-$y$-plane, and $\omega_z$ is the frequency in the $z$-direction.  
 %
@@ -169,13 +186,12 @@ V_{int}(|{r}_i-{r}_j|) =  \Bigg\{
 0 & {|{r}_i-{r}_j|} > {a}~,
 \end{array}
 \end{equation}
-where $a$ is the so-called hard-core diameter of the bosons.
+where $a$ is the so-called {\it hard-core diameter} of the bosons.
 %
 This potential describes non-interacting bosons modeled as hard spheres of radius $a/2$ described as point mass at position $r_i$, i.e., the distance of two bosons positioned at $r_i$ and $r_j$ can not be smaller than $a$.   
 %
 Consequently, $V_{int}(|{r}_i-{r}_j|)$ is zero if the bosons are separated by a distance $|{r}_i-{r}_j|$ greater than $a$ but infinite if they attempt to come within a distance $|{r}_i-{r}_j| \leq a$, i.e., their volumes overlap.
 
-%
 \subsection{The Trial Function}
 %
 %
@@ -199,7 +215,7 @@ For spherical traps we set $\beta = 1$ and for non-interacting bosons we have $\
 %
 %The ratio of the frequencies is denoted $\lambda=\omega_z/\omega_{\perp}$ leading to a ratio of the trap lengths $(a_{\perp}/a_z)=(\omega_z/\omega_{\perp})^{\frac{1}{2}} = \sqrt{\lambda}$.
 %
-The correlation wave function is given by
+The {\it correlation wave function} is given by
 
 \begin{equation}
 f(a,|{r}_i-{r}_j|)=\Bigg\{
@@ -222,11 +238,11 @@ f(a,|{r}_i-{r}_j|)=\Bigg\{
 %
 One of the main challenges in computational physics lies in the high dimensionality of the considered problems. 
 %
-To illustrate this we consider a single water molecule reduced to the electronic problem by the Born--Oppenheimer approximation [...].
+To illustrate this we consider a single water molecule reduced to the electronic problem by the Born--Oppenheimer approximation \cite{slater1964quantum,born1927quantentheorie}.
 %
-The spacial discretization of this three dimensional ten electron problem is in $\mathcal{O}(n^{30})$, where $n$ describes the discretization points. 
+The spacial discretization of this three-dimensional ten-electron problem is in $\mathcal{O}(n^{30})$, where $n$ describes the discretization points. 
 %
-Hence, for $n=10^3$ this simple toy model already exceeds the number of particles in the universe [...]. 
+Hence, for a rough discretization of $n=10^3$ the storage of this simple molecule already exceeds the estimated number of particles in the universe. 
 %
 This exponential growth with respect to the dimensionality is also known as \textit{curse of dimensionality}. 
 %
@@ -237,9 +253,9 @@ Subsequently, we introduce computational methods breaking this fatal growth beha
 \subsection{Variational Monte Carlo Method}
 %
 %
-The main object of study will be the expectation value of the Hamilton operator, i.e.,
+The main object of study will be the system's energy, by means of the {\it Copenhagen interpretation} \cite{heisenberg1963kopenhager}, given by the Hamilton operator's expectation value, i.e.,
 \begin{align*}
-\langle H \rangle_{\psi} = \frac{\int_{\Omega}\psi^*(\tau) H \psi(\tau)\, d\tau}{\Vert \psi \Vert}~.
+\langle H \rangle_{\psi} = \frac{\int_{\Omega}\psi^*(R) H \psi(R)\, dR}{\Vert \psi \Vert}~.
 \end{align*}
 We emphasize that in most cases $\Omega$ will be high dimensional, e.g., for nuclear problems $\Omega = \mathbb{R}^{3N}\times \{\pm 1/2\}^{N} \times \{\pm 1/2\}^{N}$ describing the spacial-, spin- and isospin-coordinates of the nucleons. 
 %
@@ -248,14 +264,14 @@ This high dimensionality prohibits a use of conventional numerical integration s
 There are various alternative many-body methods trying to break the curse of dimensionality, however, their success depends strongly on the system's physical properties.
 
 %
-The method chosen for this work is the variational Monte-Carlo method (vmc). Before going into further detail, we notice that the system's energy is defined by the Rayleigh--Ritz variational principle [...], i.e.,
+The method chosen for this work is the {\it variational Monte-Carlo method} (vmc). Before going into further detail, we notice that the system's energy is defined by the Rayleigh--Ritz variational principle \cite{yserentant2013short}, i.e.,
 \begin{align*}
 E_0 = \underset{\Vert \psi \Vert=1}{\mathrm{min}}\langle \psi ,H \psi\rangle=\langle H \rangle_{\psi_0} ~.
 \end{align*} 
 Hence, by choosing any trial wave function $\psi_T$ with $\Vert \psi_T\Vert =1$ we get $E_0\leq \langle H \rangle_{\psi_T }$.
 %
 Using special properties of the Hamilton operator\footnote{
-Careful, linear self-adjoint and bounded operators do not necessarily have an eigen-basis. However, in finite dimensional Hilbert spaces as in computations this is the case.
+Careful, linear self-adjoint and bounded operators do not necessarily have an eigen-basis. However, in finite dimensional Hilbert spaces (as relevant for computations) this is always true.
 } we can expand any trial function in terms of eigenstates, i.e.,
 \begin{align*}
 \psi_T=\sum_{i}a_i\psi_i~,
@@ -266,17 +282,19 @@ Without loss of generality we assume $\Vert \psi \Vert = 1$ which implies
 \begin{align*}
 E_0\leq \frac{\sum_{i}|a_i|^2E_i}{\sum_{i}|a_i|^2}~.
 \end{align*}
-We see that by varying the trial function's parameter $a_i$, the Rayleigh --Ritz variational principle yields the ground state solution.
+We see that by varying the trial function's parameters $\{a_i\}$, the Rayleigh--Ritz variational principle yields the ground state solution.
 %
 Note, that in most cases the wave function has small extension coefficients in large parts of the configuration space, i.e., a straightforward computation using homogeneously distributed points in the configuration space will most likely not be efficient.  
 %
-Consequently, we will use a \textit{importance sampling} combined with the \textit{Metropolis} algorithm.
+Consequently, we will use the \textit{importance sampling} combined with the \textit{Metropolis} algorithm.
 
+%
+Subsequently we describe the underlying theory of Monte Carlo methods, which will be sued in this project.
 %
 Monte-Carlo methods are based on the \textit{strong law of large numbers}:\\
 
 \textit{
-\textbf{Etemadi, 1981 [...]:} Let $(X_n)_{n\in\mathbb{N}}\subseteq L^1(\Omega, \mathcal{A}, \mathbb{P})$ be a sequence of pairwise independent, identically distributed random variables. Then
+\textbf{Etemadi, 1981 \cite{etemadi1981elementary}:} Let $(X_n)_{n\in\mathbb{N}}\subseteq L^1(\Omega, \mathcal{A}, \mathbb{P})$ be a sequence of pairwise independent, identically distributed random variables. Then
 \begin{align*}
 \frac{1}{N}\sum_{n=1}^NX_n\overset{a.s}{\longrightarrow}\mathbb{E}(X_1)~,
 \end{align*}
@@ -284,13 +302,15 @@ as $n\to \infty$.
 }
 
 \begin{rmk}
-In the above theorem, we used the standard notation for probability theory. The function space $L^1(\Omega, \mathcal{A}, \mathbb{P})$ is the quotient space with respect to the kernel of $\Vert\cdot\Vert_{L^1}$ of reel-valued $\mathbb{P}$-integrable functions $f:\Omega \to \mathbb{R}$ with the underlying sigma-algebra $\mathcal{A}$.\\
+In the above theorem, we used the standard notation for probability theory:
+%
+The function space $L^1(\Omega, \mathcal{A}, \mathbb{P})$ is the quotient space with respect to the kernel of the  ${L^1}$-norm of reel-valued $\mathbb{P}$-integrable functions $f:\Omega \to \mathbb{R}$ with the underlying sigma-algebra $\mathcal{A}$.\\
 Almost sure convergence or strong convergence, denoted by $\overset{a.s}{\longrightarrow}$, means that
 \begin{align*}
 \mathbb{P}\left( \lim_{N\to \infty}X_n -  \mathbb{E}(X_1)\right)=0~,
 \end{align*}
-i.e., the set on which $\lim_{N\to \infty}X_n$ differs from $\mathbb{E}(X_1)$ is of measure zero.\\
-The above cited version is a stronger version of the \textit{strong law of large numbers} proven by Kolmogorov in 1930 [...] as it only presumes pairwise independence of the random variables. 
+i.e., the set on which $\lim_{N\to \infty}X_n$ differs from $\mathbb{E}(X_1)$ is of $\mathbb{P}$-measure zero.\\
+The above cited version is a stronger version of the \textit{strong law of large numbers} proven by Kolmogorov in 1930 \cite{kolmogorov1930loi} as it only presumes pairwise independence of the random variables. 
 \end{rmk}
 
 For a chosen trial function $\psi_T(R;a)=\sum_{i}a_i\psi_i(R)$ we define the probability density function 
@@ -304,7 +324,7 @@ and observe that
 =\int_{\Omega} \frac{|\psi_T(R;a)|^2}{\Vert \psi_T(\cdot\;;a)\Vert}\frac{H\psi_T(R;a)}{\psi_T(R;a)}\,dR\\
 &=\int_{\Omega} P(R;a)E_L(R;a)\,dR~,
 \end{align*}
-where $E_L(R;a) = H\psi_T(R;a)/\psi_T(R;a)$ denotes the local energy. 
+where $E_L(R;a) = H\psi_T(R;a)/\psi_T(R;a)$ denotes the {\it local energy}. 
 %
 We see that the last term corresponds to an integration with respect to the probability measure $\mathbb{P}$ induced by the density $P$.
 %
@@ -323,45 +343,44 @@ MENTION THE VARIANCE = 0\\
 \subsubsection{Metropolis Sampling}
 %
 %
-We start with a so-called brute-force sampling using the \textit{metropolis sampling}, i.e., sampling based on the Metropolis--Hastings algorithm [...].
+We start with a so-called brute-force sampling using the \textit{metropolis sampling}, i.e., sampling based on the Metropolis--Hastings algorithm \cite{metropolis1953equation,hastings1970monte}.
 %
-As workhorse of Markov-Chain Monte--Carlos methods, the Metropolis--Hastings algorithm (also called Metropolis algorithm) is based on the theory of Markov chains.
+As workhorse of {\it Markov-Chain Monte--Carlos methods}, the Metropolis--Hastings algorithm (also called Metropolis algorithm) is based on the following described theory of {\it Markov chains}.
 %
 Given the unknown ground-state solution density $p=|\psi_0|^2/\Vert\psi_0\Vert$ (also called {\it the target} of the Metropolis algorithm), which is defined on the sample space $\Omega$, and computable up to a multiplying constant (due to the Rayleigh--Ritz principle $p \;\propto \;\tilde{p}$).
 %
-The Metropolis--Hastings algorithm then proposes a generic way to construct a Markov chain on $\Omega$ that is {\it ergodic} and {\it stationary} with respect to $p$ and therefore converges by the ergodic theorem in distribution to $p$ [...].
+The Metropolis--Hastings algorithm then proposes a generic way to construct a Markov chain on $\Omega$ that is {\it ergodic} and {\it stationary} with respect to $p$ and therefore converges by the ergodic theorem in distribution to $p$ \cite{norris1998markov,durrett2016essentials}.
 %
-Due to its simplicity and versatility, the Metropolis--Hastings algorithm is the workhorse of Markov-Chain Monte--Carlos methods.
+Due to its simplicity and versatility, the Metropolis--Hastings algorithm is the most used Markov-Chain Monte--Carlos method.
 %
-This makes it the first solution to consider for intractable situations after homogeneously distributed sampling algorithms (cf. Robert and Casella, 2009). 
+This makes it the first solution to consider for intractable situations after homogeneously distributed sampling algorithms (cf.~\cite{robert2010introducing}). 
 %
-The main motivation for using Markov chains is that they provide shortcuts in cases where generic sampling requires too much effort from the experimenter.
+The main motivation for using Markov chains is that they provide {\it shortcuts} in cases where generic sampling requires too much effort from the experimenter.
 %
 Rather than aiming at the big picture, like homogeneously distributed sampling algorithm, Markov chains construct a progressive picture of the target distribution, proceeding by local exploration of the state space $\Omega$ until all the regions of interest have been uncovered. \\
-We start this section by briefly introducing the necessary concept of Markov-chains.....\\
+We start this section by briefly introducing the necessary concept of Markov-chains:\\
 
 %
 Markov chains are one of the most important classes of stochastic processes, as they appear in various time-evolution models.
 %
 In the following, we restrict the introduction to discrete time-homogeneous Markov chains on a finite dimensional sample set. 
 %
-A sequence of $\Omega'$-valued random variable $(X_n)_{n\in\mathbb{N}}$ is said to fulfill the Markov property if for all $k\in\mathbb{N}$ and all $\omega_1,\omega_2,...,\omega_{k+1}\in \Omega'$ the following holds:
+A sequence of $\Omega'$-valued random variable $(X_n)_{n\in\mathbb{N}}$ is said to fulfill the {\it Markov property} if for all $k\in\mathbb{N}$ and all $\omega_1,\omega_2,...,\omega_{k+1}\in \Omega'$ the following holds:
 \begin{align*}
 \mathbb{P}(X_{k+1}=\omega_{k+1}|X_{k}=\omega_{k},X_{k-1}=\omega_{k-1},...,X_{1}=\omega_{1})
 =
 \mathbb{P}(X_{k+1}=\omega_{k+1}|X_{k}=\omega_{k})~,
 \end{align*}
-where $\mathbb{P}(\cdot|\cdot)$ describes the conditional probability.
+where $\mathbb{P}(\cdot|\cdot)$ describes the {\it conditional probability}.
 %
-Hence, if a stochastic process fulfills the Markov property, the $k+1$-step is only depending on the $k$ step, i.e., the Markov chain has no memory.
-%
-(This is the major and most important difference between Markov chains and Martingales -- another class of important stochastic processes).
+Hence, if a stochastic process fulfills the Markov property, the $k+1$-step is only depending on the $k$ step, i.e., the Markov chain has no memory\footnote{This is the major and most important difference between Markov chains and Martingales -- another class of important stochastic processes.}.
 %
 As we only consider Markov chains on a finite dimensional sample set, we use the class of stochastic matrices $\mathcal{S}$ to describe a Markov process, i.e., 
 \begin{align*}
-\mathcal{S} = \left\lbrace S\in \mathbb{R}^{m\times m} | S_{i,j}\in[0,1]\,\forall i,j\in\{1,...,m\}, \sum_{i=j}^mS_{i,j}=1\,\forall i\in\{1,...,m\} \right\rbrace~.
+\mathcal{S} = \bigg\lbrace S\in \mathbb{R}^{m\times m} | S_{i,j}\in[0,1]\,\forall i,j\in\{1,...,m\}, \sum_{i=j}^mS_{i,j}=1\,\forall i\in\{1,...,m\} \bigg\rbrace~.
 \end{align*}
 We then define a Markov chain as follows:\\
+
 \textit{
 Let $S\in\mathcal{S}$ be a stochastic matrix. 
 %
@@ -370,32 +389,36 @@ A sequence of $\Omega'$-valued random variable $(X_n)_{n\in\mathbb{N}}$ is calle
 \mathbb{P}(X_{k+1}=\omega_{k+1}|X_{k}=\omega_{k},X_{k-1}=\omega_{k-1},...,X_{1}=\omega_{1})
 =S_{\omega_k,\omega_k+1}~.
 \end{align*}
-The matrix entries $S_{i,j}$ are called transition probabilities and the initial distribution $\mu$ is defined by $\mu(\omega)=\mathbb{P}(X_1=\omega)$ for $\omega\in\Omega'$.
+The matrix entries $S_{i,j}$ are called transition probabilities and the initial distribution $\mu$ is defined by $\mu(\omega)=\mathbb{P}(X_1=\omega)$ for $\omega\in\Omega'$.\\
 }
-An important feature of Markov chain a stationary distribution, i.e., a distribution $\nu$ that stay invariant under the Markov chain and therewith fulfilling the matrix equation $\nu S = \nu$. 
+
+An important feature of Markov chain is a {\it stationary distribution}, i.e., a distribution $\nu$ that stays invariant under the Markov chain and therewith fulfilling the matrix equation $\nu S = \nu$. 
 %
 The existence and uniqueness of such stationary distributions depends strongly on the Markov chain. 
 %
-The for the Metropolis algorithm central theorem, is the ergodic theorem time-homogeneous Markov chains on a finite dimensional sample space. 
+The for the Metropolis algorithm central theorem, is the {\it ergodic theorem for time-homogeneous Markov chains on a finite dimensional sample space} \cite{norris1998markov,durrett2016essentials}. 
 %
 It states that for an {\it aperiodic} and {\it irreducible} Markov chain with transition matrix $S$, $\nu S^n\overset{\mathbb{P}}{\longrightarrow}\mu$ for $n\to \infty$ and any initial distribution $\nu$, with $\mu$ being the stationary distribution.
 %
-We again used the standard notation from probability theory, where $\nu S^n\overset{\mathbb{P}}{\longrightarrow}\mu$  denotes the convergence in probability, i.e., for all $\varepsilon > 0 $ we have $\lim_{n\to \infty}\mathbb{P}(|\nu S^n - \mu|\geq\varepsilon)=0$. 
+We again used the standard notation from probability theory, where $\nu S^n\overset{\mathbb{P}}{\longrightarrow}\mu$  denotes the convergence in probability, i.e., for all $\varepsilon > 0 $ we have 
+\begin{align*}
+\lim_{n\to \infty}\mathbb{P}(|\nu S^n - \mu|\geq\varepsilon)=0~.
+\end{align*} 
 %
-Note that demanding the Markov chain with transition matrix $S$ to be {\it aperiodic} and {\it irreducible} is the same as demanding the existence of $n\in\mathbb{N}$ such that $S^n_{i,j}>0$ for all $i,j$, i.e., the Markov chain is ergodic.\\  
+Note that demanding the Markov chain with transition matrix $S$ to be {\it aperiodic} and {\it irreducible} is the same as demanding the existence of $n\in\mathbb{N}$ such that $S^n_{i,j}>0$ for all $i,j$, i.e., the Markov chain is ergodic.
+%
+The aim is now to construct an ergodic Markov chain that converges to the ground-state solution density $p$, we follow hereby the reasoning presented in \cite{robert1999metropolis}:
 
 %
-The aim is now to construct an ergodic Markov chain that converges to the ground-state solution density $p$.
-%
-Indeed, the Markov chain $(X_{n})_{n\in\mathbb{N}}$ returned by the Metropolis-Hastings method is such that it converges to $p$ [...]. 
+The Markov chain $(X_{n})_{n\in\mathbb{N}}$ returned by the Metropolis-Hastings method is indeed such that it converges to $p$~\cite{metropolis1953equation}. 
 %
 This means that the chain can be considered as a sample, albeit a dependent sample, and approximately distributed from $p$. 
 %
 Due to the Markovian nature of the simulation, the first values are highly dependent on the initial distribution and therewith from $X_1$.
 %
-Consequently, these are removed from the sample as warm-up, also called burn-in. 
+Consequently, these are removed from the sample as {\it warm-up}, also called {\it burn-in}. 
 %
-While there are very few settings where the time when the chain reaches stationarity can be determined [...], there is no need to look for such an instant since the empirical average
+While there are very few settings where the time when the chain reaches stationarity can be determined \cite{hobert2004mixture}, there is no need to look for such an instant since the empirical average
 \begin{align*}
 \frac{1}{N}\sum_{n=1}^NP(X_i;a)E_L(X_i;a)
 \end{align*}
@@ -434,11 +457,11 @@ The transition $t\to t+1$ is then given by Algorithm \ref{Alg:Metropolis-Hasting
 \end{algorithm}
 
 
-Then, as shown in Metropolis et al. (1953), this transition preserves the stationary density $p$ if the chain is irreducible, i.e., $q$ has a wide enough support to eventually reach any region of the state space $\Omega'$ with positive mass under $p$. 
+Then, as shown in \cite{metropolis1953equation}, this transition preserves the stationary density $p$ if the chain is irreducible, i.e., $q$ has a wide enough support to eventually reach any region of the state space $\Omega'$ with positive mass under $p$. 
 %
 As mentioned before, a sufficient condition is that $q$ is positive everywhere. 
 %
-The very nature of accept-reject step introduced by Metropolis et al.~is therefore sufficient to turn a simulation from an almost arbitrary proposal density $q$ into a generation that preserves $p$ as the stationary distribution. 
+The very nature of accept-reject step introduced by Metropolis et al.~\cite{metropolis1953equation} is therefore sufficient to turn a simulation from an almost arbitrary proposal density $q$ into a generation that preserves $p$ as the stationary distribution. 
 %
 This appears somewhat surprising but works indeed, as shown in theoretical description above.
 %
@@ -452,23 +475,23 @@ In this work we use $X_t$ perturbed by a normal distribution, i.e., $Y_t\sim X_t
 %
 Despite the Metropolis--Hasting sampling's simplicity, we replace this brute force algorithm with a walk in coordinate space biased by the trial wave function. 
 %
-This {\it importance sampling} is based on a stochastic differential equation, namely the Langevin equation
+This {\it importance sampling} is based on a stochastic differential equation, namely the {\it Langevin equation}, i.e.,
 \begin{align*}
 \frac{d^{2}x}{dt^{2}}=-\lambda \frac{dx}{dt}+\eta\left( t\right),
 \end{align*}
-with the position ${x}$ a particle of mass one. 
+with the position ${x}$ of a particle of mass one. 
 %
-The noise term $\eta \left(t\right)$ has a Gaussian probability distribution, where the correlation function depends on the physical problem. 
+The noise term $\eta \left(t\right)$ follows a Gaussian probability distribution, where the correlation function depends on the physical problem. 
 %
 For this work, however, we are not interested in a solution of a Langevin equation for a particular realization of the fluctuating force.
 %
 Rather, we are interested in correlation functions of the slow variables after averaging over the fluctuating force. 
 %
-As shown in [...], such correlation functions can be described by the Fokker--Planck equation, a deterministic differential equation. 
+As shown in \cite{risken1989fokker,coifman2008diffusion,ichimaru1973basic}, such correlation functions can be described by the {\it Fokker--Planck equation}, a deterministic differential equation. 
 %
-Unlike Langevin equations, a Fokker--Planck equation describes a time dependent probability density of a random variable and not the random variable itself.
+Unlike Langevin equations, the Fokker--Planck equation describes a time dependent probability density of a random variable and not the random variable itself.
 %
-We shall see that this sampling is not as far from the previously described  Metropolis--Hasting sampling, which was derived from the theory of discrete time-homogeneous Markov chains on a finite dimensional sample set.
+We shall see that the important sampling is not as far from the previously described  Metropolis--Hasting sampling, which was derived from the theory of discrete time-homogeneous Markov chains on a finite dimensional sample set.
 
 %
 Subsequently, we present a quick and dirty derivation of the Fokker--Planck equation, by shortly dropping the mathematical rigor of this work. 
@@ -485,7 +508,7 @@ The stochastic process $(X_t)_{t\geq 0 }$ is called a time continuous Markov cha
 } 
 The Markov property and the definition of the conditional probability we derive straightforwardly the Chapman-Kolmogorow equality. 
 %
-From the Markov property yields
+From the Markov property we obtain
 \begin{align*}
 \mathbb{P}&(X_{t_3}=\omega_{3},X_{t_2}=\omega_{2},X_{t_1}=\omega_{1})\\
 &=
@@ -497,7 +520,7 @@ which is equivalent to
 =
 \mathbb{P}(X_{t_1}=\omega_{1})\int_{\Omega'}\mathbb{P}(X_{t_2}=\omega_{2}|X_{t_1}=\omega_{1})\mathbb{P}(X_{t_3}=\omega_{3}|X_{t_2}=\omega_{2})d\omega_{2}~.
 \end{align*}
-Division by $\mathbb{P}(X_{t_1}=\omega_{1})$ yields the Chapman-Kolmogorow equality
+Division by $\mathbb{P}(X_{t_1}=\omega_{1})$ yields the {\it Chapman-Kolmogorow} equality
 \begin{align*}
 \label{eq:Chapman-Kolmogorow}
 \mathbb{P}(X_{t_3}=\omega_{3}|X_{t_1}=\omega_{1})
@@ -524,10 +547,10 @@ into Eq.~\eqref{eq:Integrant1}, we obtain
 \begin{align*}
 \mathbb{P}(X_{t'+\tau}=\omega''|X_{t'}=\omega')
 =
-\left(
+\Bigg(
 1+\sum_{n=0}^{\infty}\frac{1}{n!}
 \underbrace{\int_{\Omega'}(y-x')^n\mathbb{P}(X_{t'+\tau}=y|X_t'=\omega')dy}_{=M_n(\omega',t',\tau)}\left( \frac{\partial}{\partial x'} \right)^n
-\right)\delta(\omega'-\omega'')~.
+\Bigg)\delta(\omega'-\omega'')~.
 \end{align*}
 Inserting this into Eq.~\eqref{eq:Chapman-KolmogorowApl} yields
 \begin{align*}
@@ -545,7 +568,7 @@ Inserting this into Eq.~\eqref{eq:Chapman-KolmogorowApl} yields
 +\sum_{n=0}^{\infty}\frac{1}{n!}M_n(\omega',t',\tau)\left( \frac{\partial}{\partial \omega'} \right)^n
 \mathbb{P}(X_{t}=\omega|X_{t'+\tau}=\omega')~.
 \end{align*}
-As mentioned above, the Fokker-Planck equation is deterministic differential equation describing the probability density of a random variable. To meet that end, we take a closer look a differential quotient
+As mentioned above, the Fokker-Planck equation is a deterministic differential equation describing the probability density of a random variable. To meet that end, we take a closer look a differential quotient
 \begin{align*}
 \frac{\partial \mathbb{P}(X_{t}=\omega|X_{t'}=\omega')}{\partial t'}
 =
@@ -569,7 +592,7 @@ yields the differential equation
 =
 -\mathcal{L}_{KM}^{\dagger}(\omega',t')\mathbb{P}(X_{t}=\omega|X_{t'}=\omega')
 \end{align}
-with the Kramers--Moyal operator
+with the {\it Kramers--Moyal operator}
 \begin{align*}
 \mathcal{L}_{KM}(\omega',t')&=\sum_{n=0}^{\infty}\left(- \frac{\partial}{\partial \omega'}\right)^nD^{(n)}(\omega',t')~,\\
 \mathcal{L}_{KM}^{\dagger}(\omega',t'&)=\sum_{n=0}^{\infty}D^{(n)}(\omega',t')\left( \frac{\partial}{\partial \omega'}\right)^n~.
@@ -585,13 +608,13 @@ describing the time evolution of the probability density $P(\omega,t)$.
 %
 The mayor question arising at this point is under which circumstances this expansion terminates.
 %
-The answer is given by Pawulas theorem [...]:
+The answer is given by Pawulas theorem\cite{risken1989fokker}:\\
 
 \textit{
-For positive transition probabilities $\mathbb{P}(\omega, t| \omega', t')$ the expansion in Eq.~\eqref{eq:Fokker-Planck} terminates after one or two terms. If it does not terminate after the second term it never terminates. 
+For positive transition probabilities $\mathbb{P}(\omega, t| \omega', t')$ the expansion in Eq.~\eqref{eq:Fokker-Planck} terminates after one or two terms. If it does not terminate after the second term it never terminates.\\
 }
 
-If the expansion in Eq.~\eqref{eq:Fokker-Planck} terminates after the second term, the resulting differential equation is called a Fokker-Planck equation
+If the expansion in Eq.~\eqref{eq:Fokker-Planck} terminates after the second term, the resulting differential equation is called a Fokker-Planck equation:
 \begin{align*}
 \frac{\partial P(\omega,t)}{\partial t}
 =
@@ -625,7 +648,7 @@ P(\omega,t)\frac{\partial}{\partial \omega}D^{(1)}(\omega,t)~.
 \end{align*}
 We assume the drift coefficient to be of the form $D^{(1)}(\omega,t) = g(\omega,t)\partial P(\omega,t)/\partial \omega$. 
 %
-Together with Random--Nikodym theorem this yields
+Together with {\it Random--Nikodym theorem} this yields
 \begin{align*}
 \frac{\partial^2P(\omega,t)}{\partial (\omega)^2}
 =
@@ -671,11 +694,11 @@ G(x,y,\Delta t)
 where we used $D^{(2)}=1/2$.
 
 %
-Using the Langevin equation we can describe the random variable of the transition probability using an explicit Euler procedure with time step size $\Delta t$, i.e.,
+Using the Langevin equation we can describe the random variable of the transition probability using an {\it explicit Euler procedure} with time step size $\Delta t$, i.e.,
 \begin{align*}
 Y_t = X_t + D^{(2)}F(X_t) \Delta t+ \xi \sqrt{\Delta t}~.
 \end{align*}
-Using this random variable and the transition probability described by the Fokker-Planck's Greens function in the Metropolis--Hastings algorithm the Algorithm \ref{Alg:ImportanceSampling}.
+Using this random variable and the transition probability described by the Fokker--Planck's Greens function in the Metropolis--Hastings algorithm we obtain the importance sampling, see Alg.~\ref{Alg:ImportanceSampling}.
 
 \begin{algorithm}
 	\caption{Importance Sampling}
@@ -740,13 +763,14 @@ The basic idea of bootstrapping is treating inference of the true probability di
 %
 The accuracy of inferences regarding $\hat J$ using the resampled data is assessable because $\hat J$ is known. 
 %
-Assuming that $\hat J$ is a 'reasonable approximation' to the unknown distribution $J$, then the quality of inference on $J$ can in turn be inferred.
+Assuming that $\hat J$ is a {\it reasonable approximation} to the unknown distribution $J$, then the quality of inference on $J$ can in turn be inferred.
+%
+In a more informal way bootstrapping can be described as follows:
 
 %
-In a more informal way bootstrapping can be described as follows:\\
 Assume we are interested in the mean value of $X_1,...,X_K$ independently and identically $J$-distributed with $K$ being very large. 
 %
-If $K$ becomes too large, we can have to restrict the evaluation to a subset of size $n$.
+If $K$ becomes too large, we have to restrict the evaluation to a subset of size $n$.
 %
 Without loss of generality we denote this subset by $X_1,...,X_n$ with $n\ll K$.
 %
@@ -785,6 +809,7 @@ We summarize this algorithm in the following pseudo-code Alg.~\eqref{Alg:Non-par
 		\EndProcedure
 	\end{algorithmic}
 \end{algorithm}
+
 %
 In the case the histogram $P(X)$ is known, we resample from this histogram and do the Bootstrap sample steps from Alg.~\eqref{Alg:Non-parametricBootstrap}. 
 %
@@ -800,8 +825,19 @@ This is then known as {\it parametric Bootstrap}.
 \subsubsection{Blocking}
 %
 %
-[Something on Blocking, introduce blocks]
+The Blocking method is used for correlated data samples, where we can no longer use the estimators for uncorrelated sample sets.
+%
+In blocking methods, the sample set $X$ is grouped into sets of blocks $\{X^{(i)}\}$, where $X^{(i)}$ describes a blocked sample set.
+%
+The idea is now to use a block size large enough such that the elements of the different blocks are independent, which allows us to apply the estimators for uncorrelated sample sets to the blocked sample sets.  
+%
+Note that various possibilities exist to block the original sample set.
+%
+The blocking procedure used in this work is introduced in the sequel. 
 
+%
+We start this section by describing the approach of blocking methods in a more descriptive way.
+%
 Consider experimental data from a Monte Carlo simulation of step size $\Delta t$. 
 %
 In case of uncorrelated samples the mean's standard deviation is given by
@@ -850,14 +886,84 @@ This number can then be manually put into the blocking algorithm.
 % 
 An alternative to this brute force fix of the blocking method, is the {\it automatic blocking}.
 %
-We here proceed as follow... INTRODUCE ALL THE NECESSARY STUFF...
+We here proceed as follows:
 
+%
+For a given set of samples $(X_1,...,X_n)$ with $n=2^d$ we create the block set
+\begin{align*}
+X^{(1)}&=\big(\frac{1}{2}(X_1+X_2),...,\frac{1}{2}(X_{n-1}+X_n)\big) = \big(X_1^{(1)},...,X_{n_1}^{(1)}\big)~,\\
+&~\vdots\\
+X^{(d)}&=\big(\frac{1}{2}(X_1^{(d-1)}+X_2^{(d-1)}),...,\frac{1}{2}(X_{n_{d-1}-1}^{(d-1)}+X_{n_{d-1}}^{(d-1)})\big) = \big(X_1^{(d)},...,X_{n_d}^{(d)}\big)~.
+\end{align*} 
+From these block we can compute various quantities like the mean and the variance, and many which will be used to derive an automatized blocking method. 
+%
+Before going into further detail of these quantities, however, we introduce some more statistical concepts.
+%
+We define the so-called auto-variance $f_d$ for $m$ experiments of $n$ samples by
+\begin{align*}
+f_d = \frac{1}{n m}\sum_{\alpha = 1}^{m}\sum_{k=1}^{n-d}(x_{\alpha,k}-\langle x_m\rangle)(x_{\alpha,k+d}-\langle x_m\rangle)~,
+\end{align*} 
+where $\langle x_m\rangle$ denotes the means over all samples, i.e.,
+\begin{align*}
+\langle x_m\rangle := \frac{1}{nm}\sum_{\alpha = 1}^{m}\sum_{k=1}^{n}x_{\alpha,k}~.
+\end{align*}
+The total variance
+\begin{align*}
+\sigma_m
+=
+\frac{1}{mn^2}\sum_{\alpha = }^{m}\sum_{k,l = 1}^{n}(x_{\alpha,k}-\langle x_m\rangle)(x_{\alpha,l}-\langle x_m\rangle)
+\end{align*}
+can then be written as
+\begin{align*}
+\sigma_m
+=
+\frac{\sigma^2}{n}
++
+\frac{2}{n}\sum_{d = 1}^{n-1}f_d~,
+\end{align*}
+where 
+\begin{align*}
+\sigma^2
+=
+\frac{1}{mn}\sum_{\alpha=1}^{m}\sum_{k=1}^{n}(x_{\alpha,k}-\langle x_m\rangle)^2~.
+\end{align*}
+For the sake of completeness note that the expression 
+\begin{align*}
+\mathcal{E} :=\frac{2}{n}\sum_{d = 1}^{n-1}f_d
+\end{align*}
+describes the covariance.
+%
+For each blocked sample set $X^{(i)}$ we can then compute the total variance
+\begin{align*}
+\mathbb{V}(\overline{X^{(i)}})
+=
+\frac{\mathbb{V}(X^{(i)})}{n_i}+\mathcal{E}_i~.
+\end{align*}
+We then state the following proposition [CITE MARIUS...]\\
 
+{\it If $X_1,...,X_n$ is stationary, i.e., it exists a real number $c$ such that $\langle X_i\rangle=c$ for all $i$, and $\mathbb{V}(X_i)<\infty$ for one $i$, then $\mathcal{E}_i-\mathcal{E}_{i+1}= \mathrm{cov}(X^{(i)}_{j+1},X^{(i)}_j)/n_i=:\gamma^i(1)/n_i$.\\}
 
+Furthermore, it is straightforward that $\mathcal{E}_i$ is a monotone function in $i$ is we assume that $\gamma^k(1)>0$ for all $1\leq k\leq d_1$.
+%
+Hence, if $X^{(i)}$ has independent elements, then $\mathcal{E}_k=0$ and $\gamma^k(1)=0$ for all $k\geq i$. 
+%
+The inverse of this statement follows immediate as the covariance of independent samples is equal to zero.
+%
+This yields the condition used to automatize the blocking method, namely, we stop blocking if $\gamma^k(1)=0$.  
+%
+Before presenting the pseudo-code for the automatic blocking method, we give the following theorem [CITE MARIUS...] on which the procedure is based on:
 
-
-
-
+{\it 
+Let $X_1,...,X_n$ with $n=2^d$ be stationary, with $\mathbb{V}(X_i)<\infty$ for one $i$ and $\gamma(h)\to \infty$.
+%
+Then the following implication holds:\\
+If $\gamma^k(1)=0$ then
+\begin{align*}
+M_j := \sum_{k=1}^{d-1}\frac{n_k\big((n_k-1)(S^{(k)})^2/nk+\gamma^k(1)\big)2}{(S^{(k)})^4}
+\end{align*}
+is chi-squared distributed ($M_j\sim\chi^2$).
+}
+We finalize this section by presenting a pseudo-code for the automatic blocking method, see Alg.~\eqref{Alg:AutomaticBlocking}.
 
 \begin{algorithm}
 	\caption{Automatic Blocking}
@@ -926,21 +1032,20 @@ We here proceed as follow... INTRODUCE ALL THE NECESSARY STUFF...
 %
 In this section we present the implementation we used to derive next section's results. 
 %
-[SOMETHING]\\
 We start by deriving an analytic expression for the local energy. 
 \subsection{Analytical Solutions}
 %
 %
 We observe that the considered Hamiltonian contains the Laplace operator, which can be approximated by the method of finite differences.
 %
-However, we note that the used quantities are the local energy $E_l$ and the quantum force $F$, which can be described analytically, which saves computational time. 
+However, we note that the used quantities are the local energy $E_L$ and the quantum force $F$, which can be described analytically and therewith save computational time. 
 %
-We start by deriving the local energy the case with only the harmonic oscillator potential, i.e., $a=0$ implying $f(a,|r_i-r_j|)=1$ and $V_{\mathrm{int}}(|r_i-r_j|)=0$.
+We start by deriving the local energy in the harmonic oscillator potential, i.e., $a=0$ implying $f(a,|r_i-r_j|)=1$ and $V_{\mathrm{int}}(|r_i-r_j|)=0$.
 %
 \subsubsection{Harmonic Oscillator Potential}
 Following, we start with $\beta =1$, i.e., $g(\alpha, \beta, r_i)=\exp(-\alpha r_i^2)$ and find the relevant local energies in one, two and three dimensions for one and $N$ particles with the same mass. 
 %
-The trial function of a one dimensional single particle is then given by
+The trial function of a one dimensional single particle is given by
 \begin{align*}
 \psi_T(r_1,\alpha,1) = \exp(-\alpha r_1^2)~.
 \end{align*}
@@ -960,7 +1065,7 @@ E_L(r_1,\alpha)
 \end{align*}
 Note that in atomic unites with $\alpha=1/2$ the local energy is given by $E_L = 1/2$, which is the ground-state energy of the one dimensional harmonic oscillator.
 % 
-This can be straightforward generalized to the $n$-dimensional case, where
+This can be straightforwardly generalized to the $n$-dimensional case, where
 \begin{align*}
 H\psi_T(r_1,\alpha,1)
 &=
@@ -1012,7 +1117,7 @@ E_{L}(r_1,\alpha,\beta)
 =
 -\frac{\hbar^2}{2m}\left(4\alpha^2(x^2+y^2+\beta^2z^2)-2\alpha (2+\beta)\right)+V_{\mathrm{ext}}(r_1)~.
 \end{align*}
-We conclude for the $N$ particle case for the trial function
+We conclude for the $N$- particle case for the trial function
 \begin{align*}
 \psi_T(r_1,...,r_N,\alpha,\beta) = \exp(-\alpha \sum_{i=1}^{N}(x_i^2+y_i^2+\beta z_i^2))
 \end{align*}
@@ -1033,17 +1138,15 @@ E_L(r_1,...,r_n,\alpha,\beta)
 \subsubsection{Quantum Force for the Harmonic Oscillator Potential}
 %
 %
-Another often used quantity is th drift coefficient of the Fokker--Planck equation, i.e.,the quantum force. 
+Another often used quantity is th drift coefficient of the Fokker--Planck equation, i.e., the quantum force $F$. 
 %
-As we do not want to approximate the gradient of the trial function for every sampling, we derive the expression analytically.
-%
-For the harmonic oscillator potential with $\beta =1$.
+As we do not want to approximate the gradient of the trial function for every sampling, we derive the expression analytically for the harmonic oscillator potential with $\beta =1$.
 %
 Then the trial function is again given by    
 \begin{align*}
 \psi_T(r_1,\alpha,1) = \exp(-\alpha r_1^2)~,
 \end{align*}
-for which the quantum force is given by
+for which the quantum force is
 \begin{align*}
 F(r_1,\alpha,1) = \frac{1}{\psi_T(r_1,\alpha,1)}\nabla \psi_T(r_1,\alpha,1)
 =
@@ -1180,6 +1283,62 @@ u''(r_{ij})&=-\frac{a}{((r_{i,j}-a)r_{i,j})^2}(2r_{ij}-a)~.
 \end{align*} 
 This together with the analytic expression for the harmonic oscillator yields an analytic expression or the local energy.
 
+
+\subsection{The Repulsive Interaction}
+\subsubsection{Change units of Length}
+%
+We here consider a different unit of length, namely, $r\to r/a_{ho}$.
+%
+This corresponds to introducing the energy in units of $\hbar \omega_{ho}$, i.e., the Hamiltonian transforms as $H\to H/\hbar. \omega_{ho}$
+%
+The transformed Hamiltonian reads
+\begin{align}
+\label{eq:repulsiveHam}
+\frac{1}{\hbar \omega_{ho}}H
+=
+\frac{1}{\hbar \omega_{ho}}\sum_{i=1}^{N}\frac{1}{2}\bigg(
+-\frac{\hbar^2}{m}\nabla_i^2+m\omega_{ho}^2(x_i^2+y_i^2)+m\omega_z^2z_i^2
+\bigg)
++
+\frac{1}{\hbar \omega_{ho}}V_{\mathrm{int}}(|r_i-r_j|)~.
+\end{align} 
+As $V_{\mathrm{int}}$ is either zero or infinity it follows that 
+\begin{align*}
+\frac{1}{\hbar \omega_{ho}}V_{\mathrm{int}}(|r_i-r_j|) = V_{\mathrm{int}}(|r_i-r_j|)~.
+\end{align*}
+We recall that 
+\begin{align*}
+a_{ho} = \bigg(\frac{\hbar}{m\omega_{ho}}\bigg)^{1/2}
+\end{align*}
+and simplify Eq.~\eqref{eq:repulsiveHam} as follows
+\begin{align*}
+\frac{1}{\hbar \omega_{ho}}H
+&=
+\sum_{i=1}^{N}\frac{1}{2}\bigg(
+-\frac{\hbar}{m\omega_{ho}}\nabla_i^2+\frac{m\omega_{ho}}{\hbar}(x_i^2+y_i^2)+\frac{m}{\hbar \omega_{ho}}\frac{\omega_{ho}}{ \omega_{ho}}\omega_z^2z_i^2
+\bigg)
++
+V_{\mathrm{int}}(|r_i-r_j|)\\
+&=
+\sum_{i=1}^{N}\frac{1}{2}\bigg(
+-a_{ho}^2\nabla_i^2+a_{ho}^{-2}(x_i^2+y_i^2)+a_{ho}^{-2}\frac{\omega_z^2}{\omega_{ho}^2}z_i^2
+\bigg)
++
+V_{\mathrm{int}}(|r_i-r_j|)~.
+\end{align*} 
+Indeed, this corresponds to the change of length unit $r\to r/a_{ho}$.
+%
+The Hamiltonian then reads
+\begin{align*}
+H
+=
+\sum_{i=1}^{N}\frac{1}{2}\bigg(
+-\nabla_i^2+x_i^2+y_i^2+\gamma^2 z_i^2
+\bigg)
++
+V_{\mathrm{int}}(|r_i-r_j|)~,
+\end{align*} 
+where we introduced the constant $\gamma = \omega_z/\omega_{ho}$.
 
 
 

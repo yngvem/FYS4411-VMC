@@ -1,8 +1,97 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{dirac1929quantum}
 Paul~AM Dirac.
 \newblock Quantum mechanics of many-electron systems.
 \newblock {\em Proc. R. Soc. Lond. A}, 123(792):714--733, 1929.
+
+\bibitem{slater1964quantum}
+John~C Slater and Arnold Russek.
+\newblock Quantum theory of molecules and solids, vol. 1: Electronic structure
+  of molecules.
+\newblock {\em American Journal of Physics}, 32(1):65--66, 1964.
+
+\bibitem{born1927quantentheorie}
+Max Born and Robert Oppenheimer.
+\newblock Zur quantentheorie der molekeln.
+\newblock {\em Annalen der Physik}, 389(20):457--484, 1927.
+
+\bibitem{heisenberg1963kopenhager}
+Werner Heisenberg.
+\newblock {\em Die Kopenhager Deutung der Quantentheorie}.
+\newblock Stuttgart. Battenberg, 1963.
+
+\bibitem{yserentant2013short}
+Harry Yserentant.
+\newblock A short theory of the rayleigh--ritz method.
+\newblock {\em Computational Methods in Applied Mathematics}, 13(4):495--502,
+  2013.
+
+\bibitem{etemadi1981elementary}
+Nasrollah Etemadi.
+\newblock An elementary proof of the strong law of large numbers.
+\newblock {\em Zeitschrift f{\"u}r Wahrscheinlichkeitstheorie und verwandte
+  Gebiete}, 55(1):119--122, 1981.
+
+\bibitem{kolmogorov1930loi}
+Andre{\u\i} Kolmogorov.
+\newblock Sur la loi forte des grands nombres.
+
+\bibitem{metropolis1953equation}
+Nicholas Metropolis, Arianna~W Rosenbluth, Marshall~N Rosenbluth, Augusta~H
+  Teller, and Edward Teller.
+\newblock Equation of state calculations by fast computing machines.
+\newblock {\em The journal of chemical physics}, 21(6):1087--1092, 1953.
+
+\bibitem{hastings1970monte}
+W~Keith Hastings.
+\newblock Monte carlo sampling methods using markov chains and their
+  applications.
+\newblock {\em Biometrika}, 57(1):97--109, 1970.
+
+\bibitem{norris1998markov}
+James~R Norris.
+\newblock {\em Markov chains}.
+\newblock Number~2. Cambridge university press, 1998.
+
+\bibitem{durrett2016essentials}
+Richard Durrett and R~Durrett.
+\newblock {\em Essentials of stochastic processes}.
+\newblock Springer, 2016.
+
+\bibitem{robert2010introducing}
+Christian~P Robert, George Casella, and George Casella.
+\newblock {\em Introducing monte carlo methods with r}, volume~18.
+\newblock Springer, 2010.
+
+\bibitem{robert1999metropolis}
+Christian~P Robert and George Casella.
+\newblock The metropolis—hastings algorithm.
+\newblock In {\em Monte Carlo Statistical Methods}, pages 231--283. Springer,
+  1999.
+
+\bibitem{hobert2004mixture}
+James~P Hobert and Christian~P Robert.
+\newblock A mixture representation of $\pi$ with applications in markov chain
+  monte carlo and perfect sampling.
+\newblock {\em Annals of Applied Probability}, pages 1295--1305, 2004.
+
+\bibitem{risken1989fokker}
+Hannes Risken.
+\newblock The fokker-planck equation. methods of solution and applications,
+  vol. 18 of.
+\newblock {\em Springer series in synergetics}, 301, 1989.
+
+\bibitem{coifman2008diffusion}
+Ronald~R Coifman, Ioannis~G Kevrekidis, St{\'e}phane Lafon, Mauro Maggioni, and
+  Boaz Nadler.
+\newblock Diffusion maps, reduction coordinates, and low dimensional
+  representation of stochastic systems.
+\newblock {\em Multiscale Modeling \& Simulation}, 7(2):842--864, 2008.
+
+\bibitem{ichimaru1973basic}
+Setsuo Ichimaru.
+\newblock Basic principles of plasma physics: a statistical approach.
+\newblock 1973.
 
 \end{thebibliography}
