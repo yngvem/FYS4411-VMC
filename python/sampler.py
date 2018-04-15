@@ -72,21 +72,34 @@ class BaseSampler:
         return energies.mean(), energies.std()**2
 
     def perform_mc_iterations(self, num_steps, save_frequency=1,
-                              store_positions=False):
+                              return_positions=False, return_wf=False):
         """Perform the given amount of MC cycles and store the energies.
         """
         energies = np.zeros(num_steps//save_frequency)
         positions = []
+        wf_evals = []
         for i in range(num_steps):
             self.single_step()
             if i % save_frequency == 0:
                 energies[i//save_frequency] = self.current_energy
 
-            if store_positions:
-                positions.append(self.wave_function.particles.positions.copy())
+                if return_positions:
+                    positions.append(self.wave_function.particles.positions.copy())
+                if return_wf:
+                    wf_evals.append(self.wave_function())
+
         positions = np.array(positions)
+        wf_evals = np.array(wf_evals)
         self.energies = np.concatenate((self.energies, energies))
-        return (energies, positions) if store_positions else energies
+
+        if return_positions and return_wf:
+            return energies, positions, wf_evals
+        elif return_positions:
+            return energies, positions
+        elif return_wf:
+            return energies, wf_evals
+        else:
+            return energies
 
     @property
     def P(self):
@@ -111,7 +124,7 @@ class BaseSampler:
         return np.abs(self.acceptance_ratio-ideal) < delta
     
     def find_ideal_step_size(self, delta=0.1, ideal=0.5, num_iterations=100, 
-                             verbose=False):
+                             max_bisection_steps=20, verbose=False):
         """Find step size which has the specified acceptance ratio.
         
         Assumes that acceptance ratio decreases monotonically with step size
@@ -129,7 +142,7 @@ class BaseSampler:
         
         while self.compute_acceptance_ratio(num_iterations) < ideal:
             self.step_size = step_size1
-            step_size1 *= 0.5
+            step_size1 *= 0.1
             
         ar1 = self.compute_acceptance_ratio(num_iterations)
         
@@ -143,7 +156,7 @@ class BaseSampler:
         self.step_size = step_size2
         while self.compute_acceptance_ratio(num_iterations) > ideal:
             self.step_size = step_size2
-            step_size2 *= 2
+            step_size2 *= 10
             ar2 = self.compute_acceptance_ratio(num_iterations)
         
         if verbose:
@@ -163,7 +176,7 @@ class BaseSampler:
                 step_size1 = self.step_size
             
             n += 1
-            if n > 20:
+            if n > max_bisection_steps:
                 raise RuntimeError('No acceptable step size could be found')
             if verbose: print(f'    Iteration number {n} completed')
 
@@ -194,7 +207,7 @@ class MetropolisSampler(BaseSampler):
 
 
 class ImportanceSampler(BaseSampler):
-    def __init__(self, wave_function, timestep, seed=None):
+    def __init__(self, wave_function, step_size, seed=None):
         self.D = wave_function.hbar/(2*wave_function.particles.mass)
         self._F = wave_function.quantum_force
         self._old_F = self._F.copy()
@@ -204,7 +217,7 @@ class ImportanceSampler(BaseSampler):
         self._current_particle = 0
         self._num_particles = wave_function.particles.num_particles
         self._num_dimensions = wave_function.particles.num_dimensions
-        super().__init__(wave_function, step_size=timestep, seed=seed)
+        super().__init__(wave_function, step_size=step_size, seed=seed)
 
     def _rejection_criteria(self):
         return self.greens_ratio*self.P/(self._old_P)
