@@ -1013,7 +1013,24 @@ We finalize this section by presenting a pseudo-code for the automatic blocking 
 
 
 
+<<<<<<< HEAD
 
+=======
+\subsection{Numerical optimisation}
+Choosing the ideal trial wave function is an integral part of computing the ground-state energy. The way the ideal trial wave function is found is by computing
+\begin{equation}
+    \text{arg} \min_{\alpha} E_L[\psi(\cdot, \alpha)] = \text{arg} \min_{\alpha} \tilde{E}_L(\alpha), \label{eq:optimisation.problem}
+\end{equation}
+where $\alpha \in \mathbb{R}^k$ is the variational parameter(s) of our trial wavefunction. Thus, a VMC program should also solve a optimisation problem, which will be the focus of the following section.
+
+One way of solving the problem in \cref{eq:optimisation.problem} is by computing the gradient, $\nabla_\alpha E_L(\alpha)$ and finding its roots. This is, unfortunately, an NP-hard problem in general [CITE HERE] and numerical optimisation methdos is therefore used instead.
+
+The main class of optimisation methods we will consider is decent-direction based algorithms [SOME CITE HERE]. A descent direction of $\tilde{E}_L: \mathbb{R}^k \to \mathbb{R}$ in $\alpha_i \in \mathbb{R}^k$ is a vector $\bm{p}_i \in \mathbb{R}^k$ such that
+\begin{equation}
+    \tilde{E}_L(\alpha_i + \xi_i \bm{p}_i) < \tilde{E}_L(\alpha_i),
+\end{equation}
+for all $\xi_i < \epsilon_i$, with $\epsilon_i$ being some (often unknown) real number. To put it informally, a descent direction is a direction where the function decreases. How these directions are found will be discussed later, first we introduce descent direction based algorithms.
+>>>>>>> ced4ec807dfb08b5019d1f6850e2f18057a94eef
 
 
 
@@ -1026,9 +1043,34 @@ We finalize this section by presenting a pseudo-code for the automatic blocking 
 %and possible benchmark calculations.  Clarity of codes are also included in the evaluation.
 %Total number of possible points 20
 \section{Implementation}
+<<<<<<< HEAD
 %
 %
 %
+=======
+With this report follows a Python package for VMC calculations. The code follows the PEP-8 style guide and is documented using docstrings. Furthermore, Jupyter notebooks that demonstrate how to use the package is supplied. The following sections will describe how the code is structured and certain features used to optimise its runtime. Finally, we discuss some future steps that can be done to significantly speed up the computations.
+
+\subsection{Class structure}
+The package is structured using a hierarchy of classes, of which, the \texttt{Particle} class is at the lowest layer. A two-dimensional Numpy array of shape $n$-by-$d$, where $n$ is the number of particles and $d$ is the dimensionality of each particle's position vector, is used to store the positions of every particle. Furthermore, the distance between every particle is stored in an $n$-by-$n$ matrix and the difference between every particle is stored in an $n$-by-$n$-by-$d$ array. In addition to this, a boolean matrix is used to store whether any particles overlap, that is if the distance between two particles is less than their hard-core diameter. 
+
+Furthermore, the particles class stores not only the current position of the particles, but also the previous position and all of their differences and distances, which reduces compute-time whenever a perturbation is rejected. The way this is done is by having two function, one named \texttt{perturb\_particle}, which updates the \texttt{\_old\_positions} and the \texttt{\_positions} matrices, if the perturbation is rejected, the \texttt{\_positions} matrix is set to be equal the \texttt{\_old\_positions} matrix. All differences and distances are lazily evaluated, and old versions of these are also stored so that they can be restored when a perturbation is rejected.
+
+The next class is the \texttt{SingleParticleFunction} class, which has a \texttt{particles} attribute that specifies which \texttt{Particles} instance it should evaluate the the value of the single-particle function ($\phi(\bm{r_i})$), its relative gradient ($\frac{\nabla \phi(\bm{r}_i)}{\phi(\bm{r}_i)}$) and its relative laplacian ($\frac{\Delta \phi(\bm{r}_i)}{\phi(\bm{r}_i)}$ for.
+
+The \texttt{WaveFunction}, as the name implies, computes the specifics of the wave-function of the system. It contains a \texttt{particles} attribute, that also specifies which particles to consider. The \texttt{WaveFunction} class also has a \texttt{single\_particle\_function} attribute which is an instance of the \texttt{SingleParticleFunction} that share the same \texttt{Particles} instance as the parent \texttt{WaveFunction}. The \texttt{WaveFunction} class allows computation of the current local energy, the quantum force and the value of the wave-function at the particle's current position.
+
+Next, we introduce the \texttt{Sampler} classes, which allow for MCMC computations of the specified trial wave-function and hamiltonian, stored in the \texttt{wave\_function} attribute. The only difference between the \texttt{MetropolisSampler} and the \texttt{ImportanceSampler} are the \texttt{propose\_perturbation} and the \texttt{rejection\_criteria}, thus, all but these functions are implemented in the \texttt{Sampler} super-class from which the specific sampler classes inherits all information.
+
+Finally, there is a \texttt{VMC} class, which works as a wrapper for the \texttt{Sampler} classes and allows for optimisation of the variational parameter. Furthermore, this class allows for easy parallel processing using joblib.
+
+\subsection{Optimisation procedures}
+Several steps were done to optimise the runtime of the code. Firstly, the \texttt{__setstate__} and \texttt{__getstate__} functions were created for the \texttt{WaveFunction} class to allow for easy serialisation (in Python known as pickling). This makes it possible to use the Multiprocessing module for parallel computation. The way parallel computation should be performed is that each process should spawn a separate \texttt{Sampler} instance with seed specified to be the process id.
+
+Furthermore, the datastructure used to store the particles positions is a Numpy array. Thus, one particle's position is stored adjacently in memory, and all the particle's positions are stored as a single contiguous block of RAM. This allows for "single instruction, multiple data" (SIMD) to be used to optimise all operations done on the particles, which is used for all computations in this project.
+
+There are mainly one optimisation step that can be performed to increase the runtime of the programme, namely to optimise the $\sum_{i=1}^n \sum_{j=1}^n -\frac{(\bm{r}_i - \bm{r}_k)(\bm{r}_k - \bm{r}_j)}{r_{ik}r_{kj}}u'(r_{ik})u'(r_{kj})$ sum which is computed for each particle. Each iteration, which is the only term that has a computational complexity of $O(n^3)$ every iteration. To optimise this, we note that the sum can be regarded as a 
+%%
+>>>>>>> ced4ec807dfb08b5019d1f6850e2f18057a94eef
 In this section we present the implementation we used to derive next section's results. 
 %
 We start by deriving an analytic expression for the local energy. 
