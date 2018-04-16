@@ -1024,9 +1024,9 @@ Choosing the ideal trial wave function is an integral part of computing the grou
 \end{equation}
 where $\alpha \in \mathbb{R}^k$ is the variational parameter(s) of our trial wavefunction. Thus, a VMC program should also solve a optimisation problem, which will be the focus of the following section.
 
-One way of solving the problem in \cref{eq:optimisation.problem} is by computing the gradient, $\nabla_\alpha E_L(\alpha)$ and finding its roots. This is, unfortunately, an NP-hard problem in general [CITE HERE] and numerical optimisation methdos is therefore used instead.
+One way of solving the problem in \cref{eq:optimisation.problem} is by computing the gradient, $\nabla_\alpha E_L(\alpha)$ and finding its roots. This is, unfortunately, an NP-hard problem in general \cite{boyd.book} and numerical optimisation methdos is therefore used instead.
 
-The main class of optimisation methods we will consider is decent-direction based algorithms [SOME CITE HERE]. A descent direction of $\tilde{E}_L: \mathbb{R}^k \to \mathbb{R}$ in $\alpha_i \in \mathbb{R}^k$ is a vector $\bm{p}_i \in \mathbb{R}^k$ such that
+The main class of optimisation methods we will consider is decent-direction based algorithms \cite{nocedal.book}. A descent direction of $\tilde{E}_L: \mathbb{R}^k \to \mathbb{R}$ in $\alpha_i \in \mathbb{R}^k$ is a vector $\bm{p}_i \in \mathbb{R}^k$ such that
 \begin{equation}
     \tilde{E}_L(\alpha_i + \xi_i \bm{p}_i) < \tilde{E}_L(\alpha_i),
 \end{equation}
@@ -1051,27 +1051,27 @@ for all $\xi_i < \epsilon_i$, with $\epsilon_i$ being some (often unknown) real 
 
 Thus, descent-direction based optimisation algorithms work by updating $\alpha_i$ such that the target-function, $\tilde{E}_L$, decreases every iteration. There are two parts of the above algorithm that needs to be specified, the first is how the step-size, $\xi_i$ is found and the second is how the descent direction is found. 
 
-Ideally, one wants to find the optimal step-size, however, that entails solving a optimisation problem itself, which can be computationally inefficient. Solving this optimisation problem is often reffered to as an \emph{exact line search} [CITE NOCEDAL]. An alternative to this is to test different step-sizes until some heuristic is fulfilled instead. One example of such a heuristic is the Wolfe conditions, which states that the a sufficient step size, $\xi_i$ is a step size that satisfies
+Ideally, one wants to find the optimal step-size, however, that entails solving a optimisation problem itself, which can be computationally inefficient. Solving this optimisation problem is often reffered to as an \emph{exact line search} \cite{nocedal.book}. An alternative to this is to test different step-sizes until some heuristic is fulfilled instead. One example of such a heuristic is the Wolfe conditions, which states that the a sufficient step size, $\xi_i$ is a step size that satisfies
 \begin{equation}
     \tilde{E}_L(\alpha_i + \xi_i \bm{p}_i) \leq \tilde{E}_L(\alpha_i) + c_1\xi_i \nabla \tilde{E}_L(\alpha_i)^T\bm{p}_i,
 \end{equation}
 and
 \begin{equation}
-    |\nabla \tilde{E}_L(alpha_i + \xi_i \bm{p}_i)^T\bm{p}_i| < c_2 |\nabla \tilde{E}_L(\alpha_i)^T \bm{p}_i |,
+    |\nabla \tilde{E}_L(\alpha_i + \xi_i \bm{p}_i)^T\bm{p}_i| < c_2 |\nabla \tilde{E}_L(\alpha_i)^T \bm{p}_i |,
 \end{equation}
-for some $0 < c_i < c_2 < 1$ [CITE NOCEDAL]. This is called an \emph{inexact line search}. The first condition ensures that the decrease is sufficient, and the second condition ensures that the slope of the function has changed sufficiently. A result of the slope changing sufficiently is that the step-size is not chosen arbitrarily small, which is a possibility if this condition is left out.
+for some $0 < c_i < c_2 < 1$ \cite{nocedal.book}. This is called an \emph{inexact line search}. The first condition ensures that the decrease is sufficient, and the second condition ensures that the slope of the function has changed sufficiently. A result of the slope changing sufficiently is that the step-size is not chosen arbitrarily small, which is a possibility if this condition is left out.
 
-Now, we focus on computing the descent direction. The first algorithm we discuss here is the gradient descent, or steepest descent algorithm. In this case, the descent-direction is chosen to be the direction where the function decreases most rapidly (locally). Incidentally, this is equivalent to setting $\bm{p}_i = -\nabla \tilde{E}_L$, which gives the algorithm its name, "gradient descent" [CITE NOCEDAL].
+Now, we focus on computing the descent direction. The first algorithm we discuss here is the gradient descent, or steepest descent algorithm. In this case, the descent-direction is chosen to be the direction where the function decreases most rapidly (locally). Incidentally, this is equivalent to setting $\bm{p}_i = -\nabla \tilde{E}_L$, which gives the algorithm its name, "gradient descent" \cite{nocedal.book}.
 
 Another way of computing the descent-direction is performing a second degree Taylor approximation of $\tilde{E}_L$ and finding the direction pointing towards the minimum of this approximation. This is equivalent to finding a descent direction that satisfies
 \begin{equation}
     (\nabla^2 \tilde{E}_L(\alpha_i))\bm{p}_i = -\nabla \tilde{E}_L,
 \end{equation}
-where $(\nabla^2 \tilde{E}_L(\alpha_i))$ is the Hessian matrix of $\tilde{E}_L$. This algorithm is called Newton's method. The main difference between Newton's method and gradient descent is that Newton's method takes the (local) curvature of the target function in consideration when finding a descent direction, whereas gradient descent does not [CITE NOCEDAL]. Considering this curvature information rapidly speeds up the convergence rate, from the linear convergence of gradient descent to quadratic convergence [CITE NOCEDAL].
+where $(\nabla^2 \tilde{E}_L(\alpha_i))$ is the Hessian matrix of $\tilde{E}_L$. This algorithm is called Newton's method. The main difference between Newton's method and gradient descent is that Newton's method takes the (local) curvature of the target function in consideration when finding a descent direction, whereas gradient descent does not \cite{nocedal.book}. Considering this curvature information rapidly speeds up the convergence rate, from the linear convergence of gradient descent to quadratic convergence \cite{nocedal.book}.
 
-There are two downsides Newton's method. The first downside is that it requires the computation of the Hessian matrix, which may be time-consuming. The second downside is that it involves solving a, often dense, linear set of equations, which has cubic complexity with respect to the dimensionality of $\alpha$. As a way to combat these shortcomings, several \emph{quasi Newton methods} exist,such as the "Broyden-Fletcher-Goldfarb-Shanno algorithm" (or BFGS) and the "Limited memory Broyden-Fletcher-Goldfarb-Shanno algorithm" (or L-BFGS). The idea of these algorithms is to estimate curvature information of the function instead of computing it explicitly and to (hopefully) do this in a matrix that is easy to invert [CITE NOCEDAL].
+There are two downsides Newton's method. The first downside is that it requires the computation of the Hessian matrix, which may be time-consuming. The second downside is that it involves solving a, often dense, linear set of equations, which has cubic complexity with respect to the dimensionality of $\alpha$. As a way to combat these shortcomings, several \emph{quasi Newton methods} exist,such as the "Broyden-Fletcher-Goldfarb-Shanno algorithm" (or BFGS) and the "Limited memory Broyden-Fletcher-Goldfarb-Shanno algorithm" (or L-BFGS). The idea of these algorithms is to estimate curvature information of the function instead of computing it explicitly and to (hopefully) do this in a matrix that is easy to invert \cite{nocedal.book}.
 
-We want to conclude by noting that there is no difference between any of the descent-direction based algorithms in one dimension, as there is only a single descent direction in 1D. Thus, in 1D optimisation, the goal is equivalently to performing a single exact line search. This can, as noted earlier, be difficult in practice, especially when the function value and gradient is expensive to evaluate (which they are, as evaluating them entails a high dimensional integral). It can, however, bee shown that gradient descent converge to a local minimum if the step-size $\xi_i \leq \frac{2}{L}$, where $L$ is a Lipshitz constant of $E_L$, alternatively [cite]. If the step-size $\xi_i$ approaches zero as $i \to \infty$, this is guaranteed which yields convergence. We therefore choose such an optimisation scheme.
+We want to conclude by noting that there is no difference between any of the descent-direction based algorithms in one dimension, as there is only a single descent direction in 1D. Thus, in 1D optimisation, the goal is equivalently to performing a single exact line search. Computing the descent direction is also not necessary in the case of 1D optimisation, as there is only one possible descent direction. As a result of this, optimisation can easily be performed by simply plotting the local energy and variance as a function of $\alpha$ and choosing the minimum.
 
 % Code/Implementations/test: 
 %Here you should discuss how you implemented the algorithms, how you tested the algorithms,
@@ -1099,9 +1099,19 @@ Several steps were done to optimise the runtime of the code. Firstly, the \textt
 
 Furthermore, the datastructure used to store the particles positions is a Numpy array. Thus, one particle's position is stored adjacently in memory, and all the particle's positions are stored as a single contiguous block of RAM. This allows for "single instruction, multiple data" (SIMD) to be used to optimise all operations done on the particles, which is used for all computations in this project.
 
-There are mainly one optimisation step that can be performed to increase the runtime of the programme, namely to optimise the $\sum_{i=1}^n \sum_{j=1}^n -\frac{(\bm{r}_i - \bm{r}_k)(\bm{r}_k - \bm{r}_j)}{r_{ik}r_{kj}}u'(r_{ik})u'(r_{kj})$ sum which is computed for each particle. Each iteration, which is the only term that has a computational complexity of $O(n^3)$ every iteration. To optimise this, we note that the sum can be regarded as a 
-%
-We start by deriving an analytic expression for the local energy. 
+There are mainly one optimisation step that can be performed to increase the runtime of the programme, namely to optimise the 
+\begin{equation}
+    \sum_{i=1}^n \sum_{j=1}^n -\frac{(\bm{r}_i^{(m)} - \bm{r}_k^{(m)})(\bm{r}_k^{(m)} - \bm{r}_j^{(m)})}{r_{ik}^{(m)}r_{kj}^{(m)}}u'(r_{ik}^{(m)})u'(r_{kj}^{(m)}) = -\sum_{i=1}^n \sum_{j=1}^n \tilde{r}_{ik}^{(m)}\tilde{r}_{kj}^{(m)}
+\end{equation}
+sum which is computed for index $k$ every iteration $m$. This is the only term that has a computational complexity of $O(n^3)$. To optimise it, observe that if $\bm{r}_i^{(m+1)} = \bm{r}_i^{(m)} + \Delta \bm{r}_i^{(m)}$, with $\Delta \bm{r}_i^(m) = 0$ for all $i \neq l$, then,
+\begin{equation}
+    -\sum_{i=1}^n \sum_{j=1}^n \tilde{r}_{ik}^{(m+1)}\tilde{r}_{kj}^{(m+1)} = -\sum_{i=1}^n \sum_{j=1}^n \tilde{r}_{ik}^{(m)}\tilde{r}_{kj}^{(m)} -\sum_{i=1}^n \tilde{r}_{ik}^{(m)} \Delta \tilde{r}_{kl}^{(m)} - \sum_{j=1} \Delta \tilde{r}_{lk}^{(m)} \tilde{r}_{kj}^{(m)}
+\end{equation},
+where the double sum is already computed. Thus, the computational complexity can be reduced to $O(n^2)$ every iteration but the first. This is the computational bottleneck when dealing with large number of particles, should therefore be amongst the first optimisation procedures performed to the code as it is now.
+
+\subsection{Testing the code}
+Several tests were performed to make sure the simulations represent reality. Some of these were wrapped in unit tests using the PyTest framework for Python. The non-interacting case is easy to test, as there is an analytical solution, and was therefore wrapped in an unit test. Furthermore, the solution for two interacting particles in one dimension was computed and wrapped in a unit test. In addition to this, the gradients and Laplacians were tested against the finite difference approximations, but this is, at the time of writing, not wrapped in any unit test. To test that the MCMC samplers draw positions from the correct distribution, the expected energy was analytically computed for the non-interacting case and compared with the simulated results.
+
 \subsection{Analytical Solutions}
 %
 %
@@ -1418,7 +1428,8 @@ where we introduced the constant $\gamma = \omega_z/\omega_{ho}$.
 %eventual errors, the effectiveness of your algorithm, stability of the calculations etc. 
 %Total number of possible points: 20
 \section{Numerical Results}
-
+\subsection{Non-interacting particles}
+Both importance sampling and brute-force sampling yielded results that were close to the true distribution. \cref{tab:brute.noninteracting} shows the results from the brute-force sampling and \cref{tab:imp.noninteracting} shows the results from the importance sampling. And both tables demonstrate that the variance does indeed decrease as the 
 
 
 %Conclusions and perspectives: 
