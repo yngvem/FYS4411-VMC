@@ -1,5 +1,4 @@
 """
-
 """
 
 
@@ -51,7 +50,6 @@ class Particles:
 
     def set_position(self, new_position, particle_num=None):
         """Change the position of one or all of the particles.
-
         Parameters
         ----------
         new_position : Numpy array
@@ -71,7 +69,6 @@ class Particles:
 
     def perturb_particle(self, perturbation, particle_num):
         """Perturb the position of one or all of the particles.
-
         Parameters
         ----------
         perturbation : Numpy array
@@ -164,4 +161,3 @@ class Particles:
 
 if __name__ == '__main__':
     pass
-

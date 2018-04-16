@@ -8,7 +8,6 @@ __email__ = 'yngve.m.moe@gmail.com'
 import numpy as np
 from numba import jit, float64, void, int64
 from particles import Particles
-import pickle
 
 
 class SingleParticleFunction:
@@ -188,25 +187,8 @@ class WaveFunction:
         f[range(self.num_particles), range(self.num_particles)] = 1
         interactions = f.prod()
         return single_particle_part*interactions
-    
-    def __getstate__(self):
-        particles_pickle = pickle.dumps(self.particles)
-        single_particle_dict = {
-            k: v for k, v in self.single_particle_function.__dict__.items()
-                     if k != 'particles'
-        }
-        self_dict = {
-            k: v for k, v in self.__dict__.items()
-                if k not in ('single_particle_function', 'particles')
-        }
-        return particles_pickle, single_particle_dict, self_dict
-    
-    def __setstate__(self, state):
-        self.__dict__ = state[2]
-        self.particles = pickle.loads(state[0])
-        self.single_particle_function = SingleParticleFunction(self.particles)
-        self.single_particle_function.__dict__ = state[1]
-        self.single_particle_function = SingleParticleFunction(self.particles)
+
+        
 
 
 if __name__ == '__main__':
