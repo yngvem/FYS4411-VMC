@@ -59,8 +59,7 @@ class Particles:
             positions are changed.
         """
         self._positions_changed = True
-        self._num_pos_changes += 1
-        self.old_positions[:, :] = self._positions
+        self._old_positions[:, :] = self._positions
 
         if particle_num is None:
             self._positions[:, :] = new_position[:, :]
